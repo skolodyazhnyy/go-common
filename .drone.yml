@@ -1,0 +1,12 @@
+workspace:
+  base: /go
+  path: src/github.com/magento-mcom/go-common
+
+pipeline:
+  test:
+    image: mcom/gobuilder:1.9
+    pull: true
+    commands:
+      - "echo $GOPATH"
+      - "echo $GOPATH"
+      - "go test ./..."
