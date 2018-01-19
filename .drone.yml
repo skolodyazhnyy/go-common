@@ -1,0 +1,7 @@
+pipeline:
+  test:
+    image: mcom/gobuilder:1.9
+    pull: true
+    environment:
+    commands:
+      - "go test ./..."
