@@ -8,5 +8,6 @@ pipeline:
     pull: true
     commands:
       - "echo $GOPATH"
+      - "echo $GOPATH"
       - "go get"
       - "go test ./..."
