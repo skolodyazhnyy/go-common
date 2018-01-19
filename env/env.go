@@ -6,7 +6,7 @@ import (
 	"reflect"
 	"strconv"
 
-	"github.com/magento-mcom/service-bus/pkg/walker"
+	"github.com/magento-mcom/go-common/walker"
 )
 
 // Unmarshal will parse structure s for 'env:"ENV_VAR"' tags and

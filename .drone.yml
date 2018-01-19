@@ -3,4 +3,5 @@ pipeline:
     image: mcom/gobuilder:1.9
     pull: true
     commands:
+      - "go get"
       - "go test ./..."
