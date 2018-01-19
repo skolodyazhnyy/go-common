@@ -3,5 +3,6 @@ pipeline:
     image: mcom/gobuilder:1.9
     pull: true
     commands:
+      - "echo $GOPATH"
       - "go get"
       - "go test ./..."
