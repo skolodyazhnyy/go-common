@@ -2,8 +2,8 @@ package configsystem
 
 import (
 	"github.com/stretchr/testify/mock"
-	"github.com/magento-mcom/orygn-fetcher/configsystem/http"
-	"github.com/magento-mcom/orygn-fetcher/configsystem/structs"
+	"github.com/magento-mcom/go-common/configsystem/http"
+	"github.com/magento-mcom/go-common/configsystem/structs"
 )
 
 type ConfigSystemMock struct{

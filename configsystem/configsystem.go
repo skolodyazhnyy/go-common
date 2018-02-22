@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"net/http"
 	"io/ioutil"
-	http2 "github.com/magento-mcom/orygn-fetcher/configsystem/http"
-	"github.com/magento-mcom/orygn-fetcher/configsystem/structs"
+	http2 "github.com/magento-mcom/go-common/configsystem/http"
+	"github.com/magento-mcom/go-common/configsystem/structs"
 )
 
 const CLIENT_LIST_URL string = "/client"
