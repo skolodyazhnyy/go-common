@@ -21,6 +21,7 @@ type ConfigSystemInterface interface {
 	GetOmsClients(configurationSystemClient http2.HttpClientInterface) ([]structs.Client, error)
 	GetClientScopes(configurationSystemClient http2.HttpClientInterface, client string) (structs.Scope, error)
 	GetClientEnvironment(configurationSystemClient http2.HttpClientInterface, client string) (structs.Environment, error)
+	ExistsClientEnvironment(configurationSystemClient http2.HttpClientInterface, client string) (bool)
 	GetMerged(configurationSystemClient http2.HttpClientInterface, client string, scope string) (string, error)
 }
 
@@ -100,6 +101,24 @@ func (config ConfigSystem) GetClientEnvironment(configurationSystemClient http2.
 	json.NewDecoder(resp.Body).Decode(&environment)
 
 	return environment, nil
+}
+
+func (config ConfigSystem) ExistsClientEnvironment(configurationSystemClient http2.HttpClientInterface, client string) (bool) {
+
+	url := config.Url + fmt.Sprintf(CLIENT_ENVIRONMENT_URL, client, config.Environment)
+
+	resp, err := configurationSystemClient.Head(url)
+	defer resp.Body.Close()
+
+	if err != nil {
+		return false
+	}
+
+	if resp.StatusCode != http.StatusNoContent {
+		return true
+	}
+
+	return false
 }
 
 func (config ConfigSystem) GetMerged(configurationSystemClient http2.HttpClientInterface, client string, scope string) (string, error) {
