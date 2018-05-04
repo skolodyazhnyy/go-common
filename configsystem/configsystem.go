@@ -114,7 +114,7 @@ func (config ConfigSystem) ExistsClientEnvironment(configurationSystemClient htt
 		return false
 	}
 
-	if resp.StatusCode != http.StatusNoContent {
+	if resp.StatusCode == http.StatusNoContent {
 		return true
 	}
 
