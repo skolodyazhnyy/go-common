@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	http2 "github.com/magento-mcom/go-common/configsystem/http"
 	"github.com/magento-mcom/go-common/configsystem/structs"
+	"time"
 )
 
 const CLIENT_LIST_URL string = "/client"
@@ -17,11 +18,15 @@ const CLIENT_ENVIRONMENT_URL string = "/client/%s/environment/%s/"
 
 const MERGED_URL string = "/client/%s/environment/%s/scope/%s/merged"
 
+const LAST_MODIFIED_HEADER string = "Last-Modified"
+
+const TIME_FORMAT string = "Mon, 02 Jan 2006 15:04:05 MST"
+
 type ConfigSystemInterface interface {
 	GetOmsClients(configurationSystemClient http2.HttpClientInterface) ([]structs.Client, error)
 	GetClientScopes(configurationSystemClient http2.HttpClientInterface, client string) (structs.Scope, error)
 	GetClientEnvironment(configurationSystemClient http2.HttpClientInterface, client string) (structs.Environment, error)
-	ExistsClientEnvironment(configurationSystemClient http2.HttpClientInterface, client string) (bool)
+	HeadClientEnvironment(configurationSystemClient http2.HttpClientInterface, client string)  (structs.Environment, error)
 	GetMerged(configurationSystemClient http2.HttpClientInterface, client string, scope string) (string, error)
 }
 
@@ -103,7 +108,7 @@ func (config ConfigSystem) GetClientEnvironment(configurationSystemClient http2.
 	return environment, nil
 }
 
-func (config ConfigSystem) ExistsClientEnvironment(configurationSystemClient http2.HttpClientInterface, client string) (bool) {
+func (config ConfigSystem) HeadClientEnvironment(configurationSystemClient http2.HttpClientInterface, client string)  (structs.Environment, error) {
 
 	url := config.Url + fmt.Sprintf(CLIENT_ENVIRONMENT_URL, client, config.Environment)
 
@@ -111,14 +116,24 @@ func (config ConfigSystem) ExistsClientEnvironment(configurationSystemClient htt
 	defer resp.Body.Close()
 
 	if err != nil {
-		return false
+		return structs.Environment{}, err
 	}
 
 	if resp.StatusCode == http.StatusNoContent {
-		return true
+		lastModified := resp.Header.Get(LAST_MODIFIED_HEADER)
+		t, err := time.Parse(TIME_FORMAT, lastModified)
+		if err != nil {
+			return structs.Environment{}, err
+		}
+
+		environment := structs.Environment{}
+		environment.ID = config.Environment
+		environment.LastModification = int(t.UnixNano() / int64(time.Millisecond))
+
+		return environment, nil
 	}
 
-	return false
+	return structs.Environment{}, fmt.Errorf("Client has not environment")
 }
 
 func (config ConfigSystem) GetMerged(configurationSystemClient http2.HttpClientInterface, client string, scope string) (string, error) {
