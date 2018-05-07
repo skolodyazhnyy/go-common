@@ -25,9 +25,9 @@ func (config *ConfigSystemMock) GetClientEnvironment(configurationSystemClient h
 	return args.Get(0).(structs.Environment), args.Error(1)
 }
 
-func (config *ConfigSystemMock) ExistsClientEnvironment(configurationSystemClient http.HttpClientInterface, client string) (bool) {
+func (config *ConfigSystemMock) HeadClientEnvironment(configurationSystemClient http.HttpClientInterface, client string) (structs.Environment, error) {
 	args := config.Called(configurationSystemClient,client)
-	return args.Bool(0)
+	return args.Get(0).(structs.Environment), args.Error(1)
 }
 
 func (config *ConfigSystemMock) GetMerged(configurationSystemClient http.HttpClientInterface, client string, scope string) (string, error) {
