@@ -16,6 +16,8 @@ const CLIENT_SCOPES_URL string = "/client/%s/environment/%s/scope"
 
 const CLIENT_ENVIRONMENT_URL string = "/client/%s/environment/%s/"
 
+const SCHEMA_URL string = "/schema/"
+
 const MERGED_URL string = "/client/%s/environment/%s/scope/%s/merged"
 
 const LAST_MODIFIED_HEADER string = "Last-Modified"
@@ -27,6 +29,7 @@ type ConfigSystemInterface interface {
 	GetClientScopes(configurationSystemClient http2.HttpClientInterface, client string) (structs.Scope, error)
 	GetClientEnvironment(configurationSystemClient http2.HttpClientInterface, client string) (structs.Environment, error)
 	HeadClientEnvironment(configurationSystemClient http2.HttpClientInterface, client string)  (structs.Environment, error)
+	HeadSchema(configurationSystemClient http2.HttpClientInterface)  (structs.Schema, error)
 	GetMerged(configurationSystemClient http2.HttpClientInterface, client string, scope string) (string, error)
 }
 
@@ -134,6 +137,33 @@ func (config ConfigSystem) HeadClientEnvironment(configurationSystemClient http2
 	}
 
 	return structs.Environment{}, fmt.Errorf("Client has not environment")
+}
+
+func (config ConfigSystem) HeadSchema(configurationSystemClient http2.HttpClientInterface)  (structs.Schema, error) {
+
+	url := config.Url + SCHEMA_URL
+
+	resp, err := configurationSystemClient.Head(url)
+	defer resp.Body.Close()
+
+	if err != nil {
+		return structs.Schema{}, err
+	}
+
+	if resp.StatusCode == http.StatusNoContent {
+		lastModified := resp.Header.Get(LAST_MODIFIED_HEADER)
+		t, err := time.Parse(TIME_FORMAT, lastModified)
+		if err != nil {
+			return structs.Schema{}, err
+		}
+
+		schema := structs.Schema{}
+		schema.LastModification = int(t.UnixNano() / int64(time.Millisecond))
+
+		return schema, nil
+	}
+
+	return structs.Schema{}, fmt.Errorf("Schema has not found")
 }
 
 func (config ConfigSystem) GetMerged(configurationSystemClient http2.HttpClientInterface, client string, scope string) (string, error) {

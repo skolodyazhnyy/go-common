@@ -30,6 +30,11 @@ func (config *ConfigSystemMock) HeadClientEnvironment(configurationSystemClient 
 	return args.Get(0).(structs.Environment), args.Error(1)
 }
 
+func (config *ConfigSystemMock) HeadSchema(configurationSystemClient http.HttpClientInterface) (structs.Schema, error) {
+	args := config.Called(configurationSystemClient)
+	return args.Get(0).(structs.Schema), args.Error(1)
+}
+
 func (config *ConfigSystemMock) GetMerged(configurationSystemClient http.HttpClientInterface, client string, scope string) (string, error) {
 	args := config.Called(configurationSystemClient,client,scope)
 	return args.String(0), args.Error(1)
