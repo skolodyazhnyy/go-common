@@ -8,7 +8,7 @@ import (
 )
 
 // Meter middleware reports metrics to prometheus
-func Meter() Middleware {
+func Meter() func(http.Handler) http.Handler {
 	counter := prometheus.NewCounterVec(prometheus.CounterOpts{
 		Name: "http_requests_total",
 		Help: "HTTP Request Counter",

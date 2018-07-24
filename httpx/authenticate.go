@@ -13,7 +13,7 @@ type authenticator interface {
 }
 
 // Authenticate middleware allows to add authentication information into request context
-func Authenticate(a authenticator) Middleware {
+func Authenticate(a authenticator) func(http.Handler) http.Handler {
 	return func(h http.Handler) http.Handler {
 		return http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
 			if match := strings.Split(req.Header.Get("Authorization"), " "); len(match) > 1 {

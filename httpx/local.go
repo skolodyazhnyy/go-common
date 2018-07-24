@@ -7,7 +7,7 @@ import (
 )
 
 // Local middleware makes handler available only from local address, otherwise it returns 403 error.
-func Local() Middleware {
+func Local() func(h http.Handler) http.Handler {
 	return func(h http.Handler) http.Handler {
 		return http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
 			ip, _, _ := net.SplitHostPort(strings.TrimSpace(req.RemoteAddr))
