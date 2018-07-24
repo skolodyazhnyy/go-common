@@ -1,6 +1,7 @@
 package log
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"path"
@@ -32,7 +33,7 @@ func (l *Logger) debug(msg string, rec R) {
 	rec["message"] = msg
 	rec["severity"] = "DEBUG"
 
-	l.Backend.Record(rec.With(l.Record))
+	l.record(rec.With(l.Record))
 }
 
 func (l *Logger) Debug(msg string, rec map[string]interface{}) {
@@ -51,7 +52,7 @@ func (l *Logger) info(msg string, rec R) {
 	rec["message"] = msg
 	rec["severity"] = "INFO"
 
-	l.Backend.Record(rec.With(l.Record))
+	l.record(rec.With(l.Record))
 }
 
 func (l *Logger) Info(msg string, rec map[string]interface{}) {
@@ -71,7 +72,7 @@ func (l *Logger) error(msg string, rec R) {
 	rec["severity"] = "ERROR"
 	rec["location"] = location(4)
 
-	l.Backend.Record(rec.With(l.Record))
+	l.record(rec.With(l.Record))
 }
 
 func (l *Logger) Error(msg string, rec map[string]interface{}) {
@@ -91,7 +92,7 @@ func (l *Logger) warning(msg string, rec R) {
 	rec["severity"] = "WARNING"
 	rec["location"] = location(4)
 
-	l.Backend.Record(rec.With(l.Record))
+	l.record(rec.With(l.Record))
 }
 
 func (l *Logger) Warning(msg string, rec map[string]interface{}) {
@@ -103,13 +104,22 @@ func (l *Logger) Warningf(format string, args ...interface{}) {
 }
 
 func (l *Logger) Fatal(v ...interface{}) {
-	l.Backend.Record(l.Record.With(R{
+	l.record(l.Record.With(R{
 		"message":  fmt.Sprint(v...),
 		"severity": "ALERT",
 		"location": location(3),
 	}))
 
 	os.Exit(-1)
+}
+
+func (l *Logger) record(r R) {
+	if _, ok := r["context"].(context.Context); ok {
+		// TODO: fetch logger data from context
+		delete(r, "context")
+	}
+
+	l.Backend.Record(r)
 }
 
 func location(skip int) R {
