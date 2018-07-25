@@ -9,20 +9,28 @@ import (
 )
 
 type Logger struct {
-	Backend backend
-	Record  R
+	back backend
+	rec  R
+}
+
+func NewLogger(b backend) *Logger {
+	return &Logger{back: b}
 }
 
 func (l *Logger) With(rec map[string]interface{}) *Logger {
-	if l.Record == nil {
-		l.Record = R{}
+	if l.rec == nil {
+		l.rec = R{}
 	}
 
-	return &Logger{Backend: l.Backend, Record: l.Record.With(rec)}
+	return &Logger{back: l.back, rec: l.rec.With(rec)}
 }
 
 func (l *Logger) Channel(name string) *Logger {
 	return l.With(R{"channel": name})
+}
+
+func (l *Logger) Context(ctx context.Context) *Logger {
+	return l.With(R{"context": ctx})
 }
 
 func (l *Logger) debug(msg string, rec R) {
@@ -33,7 +41,7 @@ func (l *Logger) debug(msg string, rec R) {
 	rec["message"] = msg
 	rec["severity"] = "DEBUG"
 
-	l.record(rec.With(l.Record))
+	l.record(rec.With(l.rec))
 }
 
 func (l *Logger) Debug(msg string, rec map[string]interface{}) {
@@ -52,7 +60,7 @@ func (l *Logger) info(msg string, rec R) {
 	rec["message"] = msg
 	rec["severity"] = "INFO"
 
-	l.record(rec.With(l.Record))
+	l.record(rec.With(l.rec))
 }
 
 func (l *Logger) Info(msg string, rec map[string]interface{}) {
@@ -72,7 +80,7 @@ func (l *Logger) error(msg string, rec R) {
 	rec["severity"] = "ERROR"
 	rec["location"] = location(4)
 
-	l.record(rec.With(l.Record))
+	l.record(rec.With(l.rec))
 }
 
 func (l *Logger) Error(msg string, rec map[string]interface{}) {
@@ -92,7 +100,7 @@ func (l *Logger) warning(msg string, rec R) {
 	rec["severity"] = "WARNING"
 	rec["location"] = location(4)
 
-	l.record(rec.With(l.Record))
+	l.record(rec.With(l.rec))
 }
 
 func (l *Logger) Warning(msg string, rec map[string]interface{}) {
@@ -104,7 +112,7 @@ func (l *Logger) Warningf(format string, args ...interface{}) {
 }
 
 func (l *Logger) Fatal(v ...interface{}) {
-	l.record(l.Record.With(R{
+	l.record(l.rec.With(R{
 		"message":  fmt.Sprint(v...),
 		"severity": "ALERT",
 		"location": location(3),
@@ -119,7 +127,7 @@ func (l *Logger) record(r R) {
 		r = r.With(RecordFromContext(ctx))
 	}
 
-	l.Backend.Record(r)
+	l.back.Record(r)
 }
 
 func location(skip int) R {

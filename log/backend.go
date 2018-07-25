@@ -27,12 +27,12 @@ func NewText(w io.Writer, f func(R) string) *Logger {
 		f = DefaultTextFormat
 	}
 
-	return &Logger{Backend: &TextBackend{Writer: w, Formatter: f}}
+	return NewLogger(&TextBackend{Writer: w, Formatter: f})
 }
 
 // NewJSON creates logger with JSON backend
 func NewJSON(w io.Writer) *Logger {
-	return &Logger{Backend: &JSONBackend{Writer: w}}
+	return NewLogger(&JSONBackend{Writer: w})
 }
 
 // JSONBackend writes logs as JSON objects

@@ -46,7 +46,7 @@ func ExampleLogger_Info() {
 func ExampleLogger_With() {
 	logger := NewText(os.Stdout, TimelessTextFormat)
 
-	// Structured data for a single Record
+	// Structured data for a single record
 	logger.Info("oops.. something went wrong", R{"foo": "bar"})
 
 	// Structured data for all records
