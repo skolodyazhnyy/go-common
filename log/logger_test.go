@@ -1,6 +1,7 @@
 package log
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -31,7 +32,7 @@ func TimelessTextFormat(rec R) string {
 	return fmt.Sprintf("%v.%v %v %s", channel, severity, message, data)
 }
 
-func ExampleLogger_SimpleLogging() {
+func ExampleLogger_Info() {
 	logger := NewText(os.Stdout, TimelessTextFormat)
 
 	logger.Info("oops.. something went wrong", nil)
@@ -42,7 +43,7 @@ func ExampleLogger_SimpleLogging() {
 	// main.INFO OK status code is 200 {}
 }
 
-func ExampleLogger_WithStructuredData() {
+func ExampleLogger_With() {
 	logger := NewText(os.Stdout, TimelessTextFormat)
 
 	// Structured data for a single Record
@@ -59,7 +60,7 @@ func ExampleLogger_WithStructuredData() {
 	// main.INFO NotFound status code is 404 {"foo":"bazzz"}
 }
 
-func ExampleLogger_WithChannel() {
+func ExampleLogger_Channel() {
 	logger := NewText(os.Stdout, TimelessTextFormat)
 
 	// Create logger with channel
@@ -74,4 +75,18 @@ func ExampleLogger_WithChannel() {
 	// Output:
 	// main.INFO OK status code is 200 {}
 	// db.INFO NotFound status code is 404 {}
+}
+
+func ExampleLogger_Context() {
+	logger := NewText(os.Stdout, TimelessTextFormat)
+
+	ctx := AppendContext(context.Background(), map[string]interface{}{"foo": "bar"})
+
+	// Create logger with channel
+	logger.Info("Additional data in context", map[string]interface{}{
+		"context": ctx,
+	})
+
+	// Output:
+	// main.INFO Additional data in context {"foo":"bar"}
 }

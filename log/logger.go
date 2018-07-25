@@ -114,9 +114,9 @@ func (l *Logger) Fatal(v ...interface{}) {
 }
 
 func (l *Logger) record(r R) {
-	if _, ok := r["context"].(context.Context); ok {
-		// TODO: fetch logger data from context
+	if ctx, ok := r["context"].(context.Context); ok {
 		delete(r, "context")
+		r = r.With(RecordFromContext(ctx))
 	}
 
 	l.Backend.Record(r)
