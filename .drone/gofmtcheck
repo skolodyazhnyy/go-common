@@ -1,0 +1,4 @@
+#!/bin/sh
+if [ ! -z "$(go fmt ./...)" ]; then
+    echo 'It seems some files are not properly formatted. Make sure you run "go fmt" before pushing your code.'
+fi
