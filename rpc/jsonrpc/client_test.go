@@ -10,7 +10,6 @@ import (
 
 	"github.com/magento-mcom/go-common/rpc"
 	"github.com/magento-mcom/go-common/rpc/errors"
-	"gopkg.in/gin-gonic/gin.v1"
 )
 
 type TestParams struct {
@@ -63,26 +62,6 @@ func ExampleNewServer() {
 
 	// start http server using JSONRPC Server as handler
 	panic(http.ListenAndServe(":8080", srv))
-}
-
-// Create JSONRPC server using gintonic http server.
-func ExampleGinServer() {
-	// create JSONRPC server with some rpc.Handler
-	srv := GinServer(rpc.HandlerFunc(func(req rpc.Request) (interface{}, error) {
-		params := TestParams{}
-		if err := req.Bind(&params); err != nil {
-			return nil, errors.NewInvalidParams(err.Error(), nil)
-		}
-
-		return params.A + params.B, nil
-	}))
-
-	// create gin-tonic router
-	router := gin.New()
-	router.POST("/", srv)
-
-	// start http server
-	panic(http.ListenAndServe(":8080", router))
 }
 
 func TestClient(t *testing.T) {

@@ -9,17 +9,7 @@ import (
 
 	"github.com/magento-mcom/go-common/rpc"
 	"github.com/magento-mcom/go-common/rpc/errors"
-	"gopkg.in/gin-gonic/gin.v1"
 )
-
-// GinServer constructs new JSONRPC HTTP handler for gin-tonic http package.
-func GinServer(handler rpc.Handler, mw ...rpc.Middleware) func(ctxt *gin.Context) {
-	h := NewServer(handler, mw...)
-
-	return func(ctx *gin.Context) {
-		h(ctx.Writer, ctx.Request)
-	}
-}
 
 // NewServer constructs new JSONRPC HTTP handler for standard http package.
 func NewServer(handler rpc.Handler, mw ...rpc.Middleware) http.HandlerFunc {
