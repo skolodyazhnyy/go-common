@@ -1,12 +1,12 @@
 package configsystem
 
 import (
-	"github.com/stretchr/testify/mock"
 	"github.com/magento-mcom/go-common/configsystem/http"
 	"github.com/magento-mcom/go-common/configsystem/structs"
+	"github.com/stretchr/testify/mock"
 )
 
-type ConfigSystemMock struct{
+type ConfigSystemMock struct {
 	mock.Mock
 }
 
@@ -16,17 +16,17 @@ func (config *ConfigSystemMock) GetOmsClients(configurationSystemClient http.Htt
 }
 
 func (config *ConfigSystemMock) GetClientScopes(configurationSystemClient http.HttpClientInterface, client string) (structs.Scope, error) {
-	args := config.Called(configurationSystemClient,client)
-	return args.Get(0).(structs.Scope),args.Error(1)
+	args := config.Called(configurationSystemClient, client)
+	return args.Get(0).(structs.Scope), args.Error(1)
 }
 
 func (config *ConfigSystemMock) GetClientEnvironment(configurationSystemClient http.HttpClientInterface, client string) (structs.Environment, error) {
-	args := config.Called(configurationSystemClient,client)
+	args := config.Called(configurationSystemClient, client)
 	return args.Get(0).(structs.Environment), args.Error(1)
 }
 
 func (config *ConfigSystemMock) HeadClientEnvironment(configurationSystemClient http.HttpClientInterface, client string) (structs.Environment, error) {
-	args := config.Called(configurationSystemClient,client)
+	args := config.Called(configurationSystemClient, client)
 	return args.Get(0).(structs.Environment), args.Error(1)
 }
 
@@ -36,7 +36,6 @@ func (config *ConfigSystemMock) HeadSchema(configurationSystemClient http.HttpCl
 }
 
 func (config *ConfigSystemMock) GetMerged(configurationSystemClient http.HttpClientInterface, client string, scope string) (string, error) {
-	args := config.Called(configurationSystemClient,client,scope)
+	args := config.Called(configurationSystemClient, client, scope)
 	return args.String(0), args.Error(1)
 }
-

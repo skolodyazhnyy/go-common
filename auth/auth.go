@@ -1,24 +1,25 @@
 package auth
+
 import (
+	"fmt"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/clientcredentials"
-	"fmt"
 )
 
-type Auth struct{
+type Auth struct {
 	Environment string
-	Url string
-	Client string
-	Secret string
+	Url         string
+	Client      string
+	Secret      string
 }
 
-func NewAuth(environment string,url string,client string,secret string) *Auth{
+func NewAuth(environment string, url string, client string, secret string) *Auth {
 	return &Auth{
 		environment,
 		url,
 		client,
 		secret,
-		}
+	}
 }
 
 func (auth *Auth) GetAuthorizedClient() (clientcredentials.Config, error) {
