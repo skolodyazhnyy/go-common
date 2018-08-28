@@ -3,33 +3,29 @@ package configsystem
 import (
 	"encoding/json"
 	"fmt"
-	"net/http"
-	"io/ioutil"
 	http2 "github.com/magento-mcom/go-common/configsystem/http"
 	"github.com/magento-mcom/go-common/configsystem/structs"
+	"io/ioutil"
+	"net/http"
 	"time"
 )
 
-const CLIENT_LIST_URL string = "/client"
-
-const CLIENT_SCOPES_URL string = "/client/%s/environment/%s/scope"
-
-const CLIENT_ENVIRONMENT_URL string = "/client/%s/environment/%s/"
-
-const SCHEMA_URL string = "/schema/"
-
-const MERGED_URL string = "/client/%s/environment/%s/scope/%s/merged"
-
-const LAST_MODIFIED_HEADER string = "Last-Modified"
-
-const TIME_FORMAT string = "Mon, 02 Jan 2006 15:04:05 MST"
+const (
+	CLIENT_LIST_URL        = "/client"
+	CLIENT_SCOPES_URL      = "/client/%s/environment/%s/scope"
+	CLIENT_ENVIRONMENT_URL = "/client/%s/environment/%s/"
+	SCHEMA_URL             = "/schema/"
+	MERGED_URL             = "/client/%s/environment/%s/scope/%s/merged"
+	LAST_MODIFIED_HEADER   = "Last-Modified"
+	TIME_FORMAT            = "Mon, 02 Jan 2006 15:04:05 MST"
+)
 
 type ConfigSystemInterface interface {
 	GetOmsClients(configurationSystemClient http2.HttpClientInterface) ([]structs.Client, error)
 	GetClientScopes(configurationSystemClient http2.HttpClientInterface, client string) (structs.Scope, error)
 	GetClientEnvironment(configurationSystemClient http2.HttpClientInterface, client string) (structs.Environment, error)
-	HeadClientEnvironment(configurationSystemClient http2.HttpClientInterface, client string)  (structs.Environment, error)
-	HeadSchema(configurationSystemClient http2.HttpClientInterface)  (structs.Schema, error)
+	HeadClientEnvironment(configurationSystemClient http2.HttpClientInterface, client string) (structs.Environment, error)
+	HeadSchema(configurationSystemClient http2.HttpClientInterface) (structs.Schema, error)
 	GetMerged(configurationSystemClient http2.HttpClientInterface, client string, scope string) (string, error)
 }
 
@@ -111,7 +107,7 @@ func (config ConfigSystem) GetClientEnvironment(configurationSystemClient http2.
 	return environment, nil
 }
 
-func (config ConfigSystem) HeadClientEnvironment(configurationSystemClient http2.HttpClientInterface, client string)  (structs.Environment, error) {
+func (config ConfigSystem) HeadClientEnvironment(configurationSystemClient http2.HttpClientInterface, client string) (structs.Environment, error) {
 
 	url := config.Url + fmt.Sprintf(CLIENT_ENVIRONMENT_URL, client, config.Environment)
 
@@ -139,7 +135,7 @@ func (config ConfigSystem) HeadClientEnvironment(configurationSystemClient http2
 	return structs.Environment{}, fmt.Errorf("Client has not environment")
 }
 
-func (config ConfigSystem) HeadSchema(configurationSystemClient http2.HttpClientInterface)  (structs.Schema, error) {
+func (config ConfigSystem) HeadSchema(configurationSystemClient http2.HttpClientInterface) (structs.Schema, error) {
 
 	url := config.Url + SCHEMA_URL
 
