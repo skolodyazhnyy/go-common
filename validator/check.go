@@ -6,12 +6,12 @@ import (
 )
 
 // Check if given data structure is valid
-func Check(in interface{}) []error {
+func Check(in interface{}) error {
 	return traverse(nil, reflect.ValueOf(in))
 }
 
 // traverse given value checking each structure field, element of the slice or map
-func traverse(path []string, val reflect.Value) (errs []error) {
+func traverse(path []string, val reflect.Value) (errs Errors) {
 	switch val.Kind() {
 	case reflect.Ptr:
 		return traverse(path, val.Elem())
@@ -41,7 +41,7 @@ func traverse(path []string, val reflect.Value) (errs []error) {
 }
 
 // validate field of the structure against predefined list of validators
-func validate(path []string, v reflect.Value, t reflect.StructTag) (errs []error) {
+func validate(path []string, v reflect.Value, t reflect.StructTag) (errs Errors) {
 	for _, validate := range validators {
 		if err := validate(path, v, t); err != nil {
 			errs = append(errs, err)

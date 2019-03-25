@@ -29,7 +29,7 @@ func TestCheck(t *testing.T) {
 	tests := []struct {
 		Name   string
 		Input  interface{}
-		Output []error
+		Output Errors
 	}{
 		{
 			Name:   "nil value",
@@ -39,14 +39,14 @@ func TestCheck(t *testing.T) {
 		{
 			Name:  "flat structure",
 			Input: flat{},
-			Output: []error{
+			Output: Errors{
 				Error{Path: []string{"Required"}, Message: "required field is empty"},
 			},
 		},
 		{
 			Name:  "nested structure",
 			Input: nested{},
-			Output: []error{
+			Output: Errors{
 				Error{Path: []string{"Required"}, Message: "required field is empty"},
 			},
 		},
@@ -55,7 +55,7 @@ func TestCheck(t *testing.T) {
 			Input: nested{
 				Required: &nested{},
 			},
-			Output: []error{
+			Output: Errors{
 				Error{Path: []string{"Required", "Required"}, Message: "required field is empty"},
 			},
 		},
@@ -69,7 +69,7 @@ func TestCheck(t *testing.T) {
 			Input: mapped{
 				Required: map[string]*nested{"KEY": {}},
 			},
-			Output: []error{
+			Output: Errors{
 				Error{Path: []string{"Required", "KEY", "Required"}, Message: "required field is empty"},
 			},
 		},
@@ -83,7 +83,7 @@ func TestCheck(t *testing.T) {
 			Input: sliced{
 				Required: []*nested{{}},
 			},
-			Output: []error{
+			Output: Errors{
 				Error{Path: []string{"Required", "0", "Required"}, Message: "required field is empty"},
 			},
 		},
@@ -91,7 +91,12 @@ func TestCheck(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.Name, func(t *testing.T) {
-			errs := Check(test.Input)
+			err := Check(test.Input)
+
+			errs, ok := err.(Errors)
+			if !ok {
+				t.Fatalf("Returned value is not of type validator.Errors, got %T instead", err)
+			}
 
 			if !reflect.DeepEqual(errs, test.Output) {
 				t.Errorf("Errors do not match: want %#v, got %#v", test.Output, errs)
