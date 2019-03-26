@@ -93,13 +93,20 @@ func TestCheck(t *testing.T) {
 		t.Run(test.Name, func(t *testing.T) {
 			err := Check(test.Input)
 
-			errs, ok := err.(Errors)
-			if !ok {
-				t.Fatalf("Returned value is not of type validator.Errors, got %T instead", err)
+			if test.Output == nil && err != nil {
+				t.Errorf("Checker should return nil, got %#v instead", err)
 			}
 
-			if !reflect.DeepEqual(errs, test.Output) {
-				t.Errorf("Errors do not match: want %#v, got %#v", test.Output, errs)
+
+			if test.Output != nil {
+				errs, ok := err.(Errors)
+				if !ok {
+					t.Fatalf("Returned value is not of type validator.Errors, got %T instead", err)
+				}
+
+				if !reflect.DeepEqual(errs, test.Output) {
+					t.Errorf("Errors do not match: want %#v, got %#v", test.Output, errs)
+				}
 			}
 		})
 	}

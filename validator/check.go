@@ -7,7 +7,12 @@ import (
 
 // Check if given data structure is valid
 func Check(in interface{}) error {
-	return traverse(nil, reflect.ValueOf(in))
+	errs := traverse(nil, reflect.ValueOf(in))
+	if len(errs) == 0 {
+		return nil
+	}
+
+	return errs
 }
 
 // traverse given value checking each structure field, element of the slice or map
