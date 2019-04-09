@@ -5,9 +5,12 @@ Backoff is a package which helps to handle the exponentially increase of delay f
 ## Usage
 
 Just instantiate new backoff with `backoff.New()` and call `.Timeout()` everytime you need to encrease delay.
-For custom backoff time periods you can use `backoff.NewWithParameters()` in which you can specify the maximum time delay and after how long it has to be reset
+
+For custom backoff time periods you can use `backoff.NewWithParameters()` in which you can specify the maximum time delay and after how long it has to be reset.
+
 
 ## Example
+With default maximum delay period and reset after period:
 
 ```go
 package main
