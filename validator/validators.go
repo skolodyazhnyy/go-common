@@ -24,18 +24,6 @@ func required(path []string, val reflect.Value, tag reflect.StructTag) error {
 		if val.String() == "" {
 			return Error{Path: path, Message: "required field is empty"}
 		}
-	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
-		if val.Int() == 0 {
-			return Error{Path: path, Message: "required field is empty"}
-		}
-	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
-		if val.Uint() == 0 {
-			return Error{Path: path, Message: "required field is empty"}
-		}
-	case reflect.Float32, reflect.Float64:
-		if val.Float() == 0 {
-			return Error{Path: path, Message: "required field is empty"}
-		}
 	}
 
 	return nil
