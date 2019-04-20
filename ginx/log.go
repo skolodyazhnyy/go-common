@@ -30,6 +30,7 @@ func Log(log logger) gin.HandlerFunc {
 				"http_referer":   c.Request.Referer(),
 				"http_latency":   latency,
 				"http_protocol":  c.Request.Proto,
+				"context":        c.Request.Context(),
 			}
 
 			if status/100 == 5 {

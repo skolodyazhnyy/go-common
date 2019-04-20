@@ -33,6 +33,7 @@ func Log(log logger) func(http.Handler) http.Handler {
 					"http_referer":   req.Referer(),
 					"http_latency":   latency,
 					"http_protocol":  req.Proto,
+					"context":        req.Context(),
 				}
 
 				if status/100 == 5 {

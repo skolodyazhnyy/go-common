@@ -1,13 +1,14 @@
 package httpx
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"time"
 )
 
 type telemetry interface {
-	Timing(string, time.Duration, []string)
+	Timing(context.Context, string, time.Duration, []string)
 }
 
 // Measure middleware reports http_request metric
@@ -22,7 +23,7 @@ func Measure(meter telemetry) func(http.Handler) http.Handler {
 				statusCode := fmt.Sprint(writer.status)
 				statusClass := fmt.Sprintf("%dxx", writer.status/100)
 
-				meter.Timing("http_request", time.Since(start), []string{
+				meter.Timing(req.Context(), "http_request", time.Since(start), []string{
 					"method:" + method,
 					"status:" + statusCode,
 					"status_class:" + statusClass,
