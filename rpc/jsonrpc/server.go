@@ -20,6 +20,7 @@ func NewServer(handler rpc.Handler, mw ...rpc.Middleware) http.HandlerFunc {
 
 		if _, ok := err.(errors.ServiceNotFoundError); ok {
 			rw.WriteHeader(http.StatusNotFound)
+			//nolint:errcheck
 			rw.Write([]byte("404 page not found"))
 			return
 		}
@@ -28,8 +29,10 @@ func NewServer(handler rpc.Handler, mw ...rpc.Middleware) http.HandlerFunc {
 		rw.WriteHeader(http.StatusOK)
 
 		if err != nil {
+			//nolint:errcheck
 			writeError(rw, req, err)
 		} else {
+			//nolint:errcheck
 			writeResponse(rw, req, resp)
 		}
 	}
@@ -97,7 +100,9 @@ func writeError(w io.Writer, req rpc.Request, e error) error {
 		return err
 	}
 
-	w.Write(data)
+	if _, err := w.Write(data); err != nil {
+		return err
+	}
 
 	return nil
 }
@@ -113,7 +118,9 @@ func writeResponse(w io.Writer, req rpc.Request, resp interface{}) error {
 		return err
 	}
 
-	w.Write(data)
+	if _, err := w.Write(data); err != nil {
+		return err
+	}
 
 	return nil
 }

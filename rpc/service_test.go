@@ -1,6 +1,7 @@
 package rpc
 
 import (
+	"context"
 	"fmt"
 	"testing"
 )
@@ -42,10 +43,12 @@ func ExampleNewService() {
 		},
 	})
 
-	r, _ := handler.Handle(NewRequest(nil, "calc.add", ExampleParams{A: 10, B: 2}))
+	ctx := context.Background()
+
+	r, _ := handler.Handle(NewRequest(ctx, "calc.add", ExampleParams{A: 10, B: 2}))
 	fmt.Printf("Result: %v\n", r)
 
-	_, err := handler.Handle(NewRequest(nil, "calc.div", ExampleParams{A: 10, B: 2}))
+	_, err := handler.Handle(NewRequest(ctx, "calc.div", ExampleParams{A: 10, B: 2}))
 	fmt.Printf("Error: %v\n", err)
 
 	// Output:
@@ -66,15 +69,17 @@ func TestService_Handle(t *testing.T) {
 		},
 	})
 
+	ctx := context.Background()
+
 	t.Run("Handle existent method", func(t *testing.T) {
-		v, _ := ctrl.Handle(NewRequest(nil, "foo.bar", 100))
+		v, _ := ctrl.Handle(NewRequest(ctx, "foo.bar", 100))
 		if v == nil || v.(int) != 101 {
 			t.Error("Handler returned wrong result")
 		}
 	})
 
 	t.Run("Handle non-existent method", func(t *testing.T) {
-		_, e := ctrl.Handle(NewRequest(nil, "bazz", nil))
+		_, e := ctrl.Handle(NewRequest(ctx, "bazz", nil))
 		if e == nil {
 			t.Error("Handler should return an error when handling invalid method")
 		}

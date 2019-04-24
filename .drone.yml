@@ -3,10 +3,18 @@ workspace:
   path: src/github.com/magento-mcom/go-common
 
 pipeline:
-  test:
+  dep:
     image: mcom/gobuilder:1.9
     pull: true
     commands:
       - "go get ./..."
+  lint:
+    image: golangci/golangci-lint:v1.16.0
+    pull: true
+    commands:
+      - "golangci-lint run"
+  test:
+    image: mcom/gobuilder:1.9
+    pull: true
+    commands:
       - "go test ./..."
-      - ".drone/gofmtcheck"
