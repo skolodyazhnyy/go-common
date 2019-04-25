@@ -79,7 +79,7 @@ func ExampleLogger_Channel() {
 	// db.INFO NotFound status code is 404 {"location":"logger_test.go:75"}
 }
 
-func ExampleLogger_Context() {
+func ExampleAppendContext() {
 	log := NewText(os.Stdout, TimelessTextFormat)
 
 	ctx := AppendContext(context.Background(), map[string]interface{}{"foo": "bar"})
