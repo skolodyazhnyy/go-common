@@ -8,11 +8,11 @@ import (
 )
 
 type backend interface {
-	Record(R)
+	Record(map[string]interface{})
 }
 
 // NewText creates logger with text backend
-func NewText(w io.Writer, f func(R) string) *Logger {
+func NewText(w io.Writer, f func(map[string]interface{}) string) *Logger {
 	if f == nil {
 		f = DefaultTextFormat
 	}
@@ -31,28 +31,30 @@ type jsonBackend struct {
 }
 
 // Record an entry
-func (b *jsonBackend) Record(rec R) {
+func (b *jsonBackend) Record(rec map[string]interface{}) {
 	if rec == nil {
-		rec = R{}
+		rec = make(map[string]interface{})
 	}
 
 	rec["time"] = time.Now().UTC()
 
+	//nolint:errcheck
 	json.NewEncoder(b.writer).Encode(rec)
 }
 
 // textBackend writes logs as formatted text
 type textBackend struct {
 	writer    io.Writer
-	formatter func(R) string
+	formatter func(map[string]interface{}) string
 }
 
 // Record an entry
-func (b *textBackend) Record(rec R) {
+func (b *textBackend) Record(rec map[string]interface{}) {
 	if rec == nil {
-		rec = R{}
+		rec = make(map[string]interface{})
 	}
 
+	//nolint:errcheck
 	fmt.Fprintln(b.writer, b.formatter(rec))
 }
 
@@ -61,5 +63,5 @@ type nopBackend struct {
 }
 
 // Record an entry
-func (b *nopBackend) Record(rec R) {
+func (b *nopBackend) Record(rec map[string]interface{}) {
 }

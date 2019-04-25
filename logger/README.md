@@ -18,7 +18,7 @@ func main() {
 	logfmt := flag.String("logfmt", "json", "Logger format (options are: json or text)")
 	flag.Parse()
 	
-	log := logger.New(*logfmt, os.Stdout, logger.DefaultTextFormatter)
+	log := logger.New(*logfmt, os.Stdout)
 	// logger is ready to be used! 
 }
 ```

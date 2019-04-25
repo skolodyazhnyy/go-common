@@ -13,19 +13,21 @@ import (
 var Discard = NewWithBackend(&nopBackend{})
 
 // New creates logger with a given backend
-func New(fmt string, w io.Writer, f func(R) string) *Logger {
+func New(fmt string, w io.Writer) *Logger {
 	switch fmt {
-	case "json":
-		return NewJSON(w)
+	case "plain":
+		return NewText(w, PlainTextFormat)
+	case "text":
+		return NewText(w, DefaultTextFormat)
 	default:
-		return NewText(w, f)
+		return NewJSON(w)
 	}
 }
 
 // Logger provides interface for logging
 type Logger struct {
 	back backend
-	rec  R
+	rec  map[string]interface{}
 }
 
 // NewWithBackend creates logger with given backend
@@ -35,137 +37,90 @@ func NewWithBackend(b backend) *Logger {
 
 // With creates new logger from existing one with predefined parameters
 func (l *Logger) With(rec map[string]interface{}) *Logger {
-	if l.rec == nil {
-		l.rec = R{}
-	}
-
-	return &Logger{back: l.back, rec: l.rec.With(rec)}
+	return &Logger{back: l.back, rec: merge(l.rec, rec)}
 }
 
 // Channel creates new logger from existing one with `channel` parameter preset
 func (l *Logger) Channel(name string) *Logger {
-	return l.With(R{"channel": name})
+	return l.With(map[string]interface{}{"channel": name})
 }
 
-func (l *Logger) debug(msg string, rec R) {
-	if rec == nil {
-		rec = make(R)
-	}
-
-	rec["message"] = msg
-	rec["level"] = "DEBUG"
-	rec["location"] = location(4)
-
-	l.record(rec.With(l.rec))
+// Debug message
+func (l *Logger) Debug(msg string, record map[string]interface{}) {
+	l.record("DEBUG", msg, record)
 }
 
-func (l *Logger) Debug(msg string, rec map[string]interface{}) {
-	l.debug(msg, rec)
-}
-
+// Debugf message in prtinf format
 func (l *Logger) Debugf(format string, args ...interface{}) {
-	l.debug(fmt.Sprintf(format, args...), nil)
+	l.record("DEBUG", fmt.Sprintf(format, args...), nil)
 }
 
-func (l *Logger) info(msg string, rec R) {
-	if rec == nil {
-		rec = make(R)
-	}
-
-	rec["message"] = msg
-	rec["level"] = "INFO"
-	rec["location"] = location(4)
-
-	l.record(rec.With(l.rec))
+// Info message
+func (l *Logger) Info(msg string, record map[string]interface{}) {
+	l.record("INFO", msg, record)
 }
 
-func (l *Logger) Info(msg string, rec map[string]interface{}) {
-	l.info(msg, rec)
-}
-
+// Infof message in prtinf format
 func (l *Logger) Infof(format string, args ...interface{}) {
-	l.Info(fmt.Sprintf(format, args...), nil)
+	l.record("INFO", fmt.Sprintf(format, args...), nil)
 }
 
-func (l *Logger) error(msg string, rec R) {
-	if rec == nil {
-		rec = make(R)
-	}
-
-	rec["message"] = msg
-	rec["level"] = "ERROR"
-	rec["location"] = location(4)
-
-	l.record(rec.With(l.rec))
+// Error message
+func (l *Logger) Error(msg string, record map[string]interface{}) {
+	l.record("ERROR", msg, record)
 }
 
-func (l *Logger) Error(msg string, rec map[string]interface{}) {
-	l.error(msg, rec)
-}
-
+// Errorf message in prtinf format
 func (l *Logger) Errorf(format string, args ...interface{}) {
-	l.error(fmt.Sprintf(format, args...), nil)
+	l.record("ERROR", fmt.Sprintf(format, args...), nil)
 }
 
-func (l *Logger) warning(msg string, rec R) {
-	if rec == nil {
-		rec = make(R)
-	}
-
-	rec["message"] = msg
-	rec["level"] = "WARNING"
-	rec["location"] = location(4)
-
-	l.record(rec.With(l.rec))
+// Warning message
+func (l *Logger) Warning(msg string, record map[string]interface{}) {
+	l.record("WARNING", msg, record)
 }
 
-func (l *Logger) Warning(msg string, rec map[string]interface{}) {
-	l.warning(msg, rec)
-}
-
+// Warningf message in prtinf format
 func (l *Logger) Warningf(format string, args ...interface{}) {
-	l.warning(fmt.Sprintf(format, args...), nil)
+	l.record("WARNING", fmt.Sprintf(format, args...), nil)
 }
 
 // Fatal signals a fatal error in application (typically during bootstrapping) and stop application execution
 // Never use Fatal in places other than application bootstrapping.
 func (l *Logger) Fatal(v ...interface{}) {
-	l.record(l.rec.With(R{
-		"message":  fmt.Sprint(v...),
-		"level": "ALERT",
-		"location": location(3),
-	}))
-
+	l.record("ALERT", fmt.Sprint(v...), nil)
 	os.Exit(-1)
 }
 
-func (l *Logger) record(r R) {
-	if ctx, ok := r["context"].(context.Context); ok {
-		delete(r, "context")
-		r = r.With(RecordFromContext(ctx))
+func (l *Logger) record(level, message string, record map[string]interface{}) {
+	var fromContext map[string]interface{}
+
+	if ctx, ok := record["context"].(context.Context); ok {
+		delete(record, "context")
+		fromContext = RecordFromContext(ctx)
 	}
 
-	l.back.Record(r)
+	l.back.Record(merge(l.rec, fromContext, record, map[string]interface{}{
+		"message":  message,
+		"level":    level,
+		"location": location(4),
+	}))
 }
 
-func location(skip int) R {
+func location(skip int) string {
 	fpcs := make([]uintptr, 1)
 
 	n := runtime.Callers(skip, fpcs)
 	if n == 0 {
-		return R{}
+		return ""
 	}
 
 	fun := runtime.FuncForPC(fpcs[0] - 1)
 	if fun == nil {
-		return R{}
+		return ""
 	}
 
 	file, line := fun.FileLine(fpcs[0] - 1)
 
-	return R{
-		"function": path.Base(fun.Name()),
-		"file":     path.Base(file),
-		"line":     line,
-	}
+	return fmt.Sprintf("%v:%v", path.Base(file), line)
 }

@@ -7,7 +7,7 @@ import (
 )
 
 // PlainTextFormat formats structured data into human friendly string without colors
-func PlainTextFormat(rec R) string {
+func PlainTextFormat(rec map[string]interface{}) string {
 	channel := rec["channel"]
 	delete(rec, "channel")
 	if channel == nil {
@@ -44,7 +44,7 @@ func PlainTextFormat(rec R) string {
 }
 
 // DefaultTextFormat formats structured data into human friendly string
-func DefaultTextFormat(rec R) string {
+func DefaultTextFormat(rec map[string]interface{}) string {
 	channel := rec["channel"]
 	delete(rec, "channel")
 	if channel == nil {
