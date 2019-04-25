@@ -97,7 +97,6 @@ func TestCheck(t *testing.T) {
 				t.Errorf("Checker should return nil, got %#v instead", err)
 			}
 
-
 			if test.Output != nil {
 				errs, ok := err.(Errors)
 				if !ok {
