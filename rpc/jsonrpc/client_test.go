@@ -1,6 +1,7 @@
 package jsonrpc
 
 import (
+	"context"
 	"fmt"
 	"net/http/httptest"
 	"reflect"
@@ -21,9 +22,10 @@ type TestParams struct {
 func ExampleNewClient() {
 	// create JSONRPC client
 	cli := NewClient("https://magento.com", http.DefaultClient)
+	ctx := context.Background()
 
 	// call "calc.add" with parameters
-	res, err := cli.Call(rpc.NewRequest(nil, "calc.add", TestParams{A: 100, B: 20}))
+	res, err := cli.Call(rpc.NewRequest(ctx, "calc.add", TestParams{A: 100, B: 20}))
 
 	// report server error
 	if rerr, ok := err.(errors.ErrorResponse); ok {
@@ -83,9 +85,10 @@ func TestClient(t *testing.T) {
 	defer srv.Close()
 
 	cli := NewClient(srv.URL, nil)
+	ctx := context.Background()
 
 	t.Run("happy path", func(t *testing.T) {
-		res, err := cli.Call(rpc.NewRequest(nil, "add", TestParams{A: 10, B: 81}))
+		res, err := cli.Call(rpc.NewRequest(ctx, "add", TestParams{A: 10, B: 81}))
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -102,7 +105,7 @@ func TestClient(t *testing.T) {
 	})
 
 	t.Run("method not found", func(t *testing.T) {
-		_, err := cli.Call(rpc.NewRequest(nil, "div", TestParams{}))
+		_, err := cli.Call(rpc.NewRequest(ctx, "div", TestParams{}))
 		if err == nil {
 			t.Fatal("RPC request should fail, but it didn't")
 		}
@@ -118,7 +121,7 @@ func TestClient(t *testing.T) {
 	})
 
 	t.Run("generic error", func(t *testing.T) {
-		_, err := cli.Call(rpc.NewRequest(nil, "generic-error", TestParams{}))
+		_, err := cli.Call(rpc.NewRequest(ctx, "generic-error", TestParams{}))
 		if err == nil {
 			t.Fatal("RPC request should fail, but it didn't")
 		}

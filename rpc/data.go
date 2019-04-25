@@ -26,6 +26,7 @@ type jsonData struct {
 }
 
 func (r jsonData) Raw() (v interface{}) {
+	//nolint:errcheck
 	r.Bind(&v)
 	return
 }

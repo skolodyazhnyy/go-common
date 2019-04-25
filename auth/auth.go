@@ -26,6 +26,8 @@ func (auth *Auth) GetAuthorizedClient() (clientcredentials.Config, error) {
 	if auth.Client == "" || auth.Secret == "" {
 		return clientcredentials.Config{}, fmt.Errorf("Configuration parameters for Auth must be set")
 	}
+
+	//nolint:staticcheck
 	oauth2.RegisterBrokenAuthHeaderProvider(auth.Url)
 	configuration := clientcredentials.Config{
 		ClientID:     auth.Client,

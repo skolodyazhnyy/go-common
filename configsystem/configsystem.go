@@ -46,11 +46,11 @@ func (config ConfigSystem) GetOmsClients(configurationSystemClient http2.HttpCli
 	url := config.Url + CLIENT_LIST_URL
 
 	resp, err := configurationSystemClient.Get(url)
-
 	if err != nil {
 		return nil, err
 	}
 
+	//nolint:errcheck
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
@@ -58,9 +58,8 @@ func (config ConfigSystem) GetOmsClients(configurationSystemClient http2.HttpCli
 	}
 
 	omsClients := make([]structs.Client, 0)
-	json.NewDecoder(resp.Body).Decode(&omsClients)
 
-	return omsClients, nil
+	return omsClients, json.NewDecoder(resp.Body).Decode(&omsClients)
 }
 
 func (config ConfigSystem) GetClientScopes(configurationSystemClient http2.HttpClientInterface, client string) (structs.Scope, error) {
@@ -68,21 +67,20 @@ func (config ConfigSystem) GetClientScopes(configurationSystemClient http2.HttpC
 	url := config.Url + fmt.Sprintf(CLIENT_SCOPES_URL, client, config.Environment)
 
 	resp, err := configurationSystemClient.Get(url)
-
 	if err != nil {
 		return structs.Scope{}, err
 	}
+
+	//nolint:errcheck
+	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
 		return structs.Scope{}, fmt.Errorf("(url: %s, status: %d)", url, resp.StatusCode)
 	}
 
-	defer resp.Body.Close()
-
 	clientScope := structs.Scope{}
-	json.NewDecoder(resp.Body).Decode(&clientScope)
 
-	return clientScope, nil
+	return clientScope, json.NewDecoder(resp.Body).Decode(&clientScope)
 }
 
 func (config ConfigSystem) GetClientEnvironment(configurationSystemClient http2.HttpClientInterface, client string) (structs.Environment, error) {
@@ -99,12 +97,12 @@ func (config ConfigSystem) GetClientEnvironment(configurationSystemClient http2.
 		return structs.Environment{}, fmt.Errorf("(url: %s, status: %d)", url, resp.StatusCode)
 	}
 
+	//nolint:errcheck
 	defer resp.Body.Close()
 
 	environment := structs.Environment{}
-	json.NewDecoder(resp.Body).Decode(&environment)
 
-	return environment, nil
+	return environment, json.NewDecoder(resp.Body).Decode(&environment)
 }
 
 func (config ConfigSystem) HeadClientEnvironment(configurationSystemClient http2.HttpClientInterface, client string) (structs.Environment, error) {
@@ -112,11 +110,12 @@ func (config ConfigSystem) HeadClientEnvironment(configurationSystemClient http2
 	url := config.Url + fmt.Sprintf(CLIENT_ENVIRONMENT_URL, client, config.Environment)
 
 	resp, err := configurationSystemClient.Head(url)
-	defer resp.Body.Close()
-
 	if err != nil {
 		return structs.Environment{}, err
 	}
+
+	//nolint:errcheck
+	defer resp.Body.Close()
 
 	if resp.StatusCode == http.StatusNoContent {
 		lastModified := resp.Header.Get(LAST_MODIFIED_HEADER)
@@ -140,11 +139,12 @@ func (config ConfigSystem) HeadSchema(configurationSystemClient http2.HttpClient
 	url := config.Url + SCHEMA_URL
 
 	resp, err := configurationSystemClient.Head(url)
-	defer resp.Body.Close()
-
 	if err != nil {
 		return structs.Schema{}, err
 	}
+
+	//nolint:errcheck
+	defer resp.Body.Close()
 
 	if resp.StatusCode == http.StatusNoContent {
 		lastModified := resp.Header.Get(LAST_MODIFIED_HEADER)
@@ -167,7 +167,6 @@ func (config ConfigSystem) GetMerged(configurationSystemClient http2.HttpClientI
 	url := config.Url + fmt.Sprintf(MERGED_URL, client, config.Environment, scope)
 
 	resp, err := configurationSystemClient.Get(url)
-
 	if err != nil {
 		return "", err
 	}
