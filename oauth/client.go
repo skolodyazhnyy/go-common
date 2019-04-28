@@ -3,7 +3,6 @@ package oauth
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -14,8 +13,11 @@ import (
 var (
 	ErrTokenInvalid       = errors.New("token is invalid")
 	ErrInvalidCredentials = errors.New("invalid credentials")
-	ErrReadingResponse    = fmt.Errorf("unable to read OAuth response")
-	ErrParsingResponse    = fmt.Errorf("unable to parse OAuth response")
+	ErrReadingResponse    = errors.New("unable to read OAuth response")
+	ErrParsingResponse    = errors.New("unable to parse OAuth response")
+	ErrEmptyEndpoint      = errors.New("OAuth endpoint is not configured")
+	ErrBadRequestError    = errors.New("bad request error")
+	ErrServerError        = errors.New("server error")
 )
 
 // Client provides mechanism to fetch OAuth token and scopes
@@ -39,7 +41,7 @@ func NewClient(endpoint string, opts ...ClientOption) *Client {
 		},
 		logger: &nopLogger{},
 		client: &http.Client{
-			Timeout: time.Duration(5 * time.Second),
+			Timeout: 5 * time.Second,
 		},
 	}
 
@@ -52,6 +54,10 @@ func NewClient(endpoint string, opts ...ClientOption) *Client {
 
 // ClientCredentials returns OAuth token using client credentials
 func (c *Client) ClientCredentials(id, secret string) (string, error) {
+	if c.url == "" {
+		return "", ErrEmptyEndpoint
+	}
+
 	query := url.Values{
 		"grant_type":    []string{"client_credentials"},
 		"client_id":     []string{id},
@@ -77,8 +83,12 @@ func (c *Client) ClientCredentials(id, secret string) (string, error) {
 		return "", ErrInvalidCredentials
 	}
 
-	if resp.StatusCode/100 != 2 {
-		return "", fmt.Errorf("OAuth response status code %v", resp.StatusCode)
+	if resp.StatusCode/100 == 4 {
+		return "", ErrBadRequestError
+	}
+
+	if resp.StatusCode/100 == 5 {
+		return "", ErrServerError
 	}
 
 	payload := struct {
@@ -99,6 +109,10 @@ func (c *Client) ClientCredentials(id, secret string) (string, error) {
 
 // Scopes for OAuth token
 func (c *Client) Scopes(token string) (scopes []string, err error) {
+	if c.url == "" {
+		return nil, ErrEmptyEndpoint
+	}
+
 	key := "oauth_token_scopes_" + token
 
 	ok, err := c.cache.Get(key, &scopes)
@@ -128,8 +142,12 @@ func (c *Client) Scopes(token string) (scopes []string, err error) {
 		return nil, ErrTokenInvalid
 	}
 
-	if resp.StatusCode != 200 {
-		return nil, fmt.Errorf("OAuth server returned non-200 response: %v", resp.StatusCode)
+	if resp.StatusCode/100 == 4 {
+		return nil, ErrBadRequestError
+	}
+
+	if resp.StatusCode/100 == 5 {
+		return nil, ErrServerError
 	}
 
 	body, err := ioutil.ReadAll(resp.Body)
