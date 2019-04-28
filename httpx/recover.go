@@ -1,8 +1,7 @@
-package ginx
+package httpx
 
 import (
 	"fmt"
-	"github.com/gin-gonic/gin"
 	"net/http"
 	"path"
 	"runtime"
@@ -12,17 +11,19 @@ type recovery interface {
 	Error(msg string, data map[string]interface{})
 }
 
-// Recovery middleware allows to gracefully handle panics raised during request processing
-func Recovery(log recovery) gin.HandlerFunc {
-	return func(c *gin.Context) {
-		defer func() {
-			if err := recover(); err != nil {
-				log.Error(fmt.Sprint(err), map[string]interface{}{"panic": location(5)})
-				c.Writer.WriteHeader(http.StatusInternalServerError)
-			}
-		}()
+// Recover middleware allows to gracefully handle panics raised during request processing
+func Recover(log recovery) func(http.Handler) http.Handler {
+	return func(h http.Handler) http.Handler {
+		return http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
+			defer func() {
+				if err := recover(); err != nil {
+					log.Error(fmt.Sprint(err), map[string]interface{}{"panic": location(5)})
+					rw.WriteHeader(http.StatusInternalServerError)
+				}
+			}()
 
-		c.Next()
+			h.ServeHTTP(rw, req)
+		})
 	}
 }
 

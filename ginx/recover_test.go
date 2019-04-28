@@ -1,7 +1,8 @@
-package httpx
+package ginx
 
 import (
 	"errors"
+	"github.com/gin-gonic/gin"
 	"net/http"
 	"net/http/httptest"
 	"reflect"
@@ -10,10 +11,16 @@ import (
 
 func TestRecovery(t *testing.T) {
 	log := &sliceLogger{}
-	
-	srv := httptest.NewServer(Recovery(log)(http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
+
+	gin.SetMode(gin.ReleaseMode)
+
+	router := gin.New()
+	router.Use(Recover(log))
+	router.GET("/", func(c *gin.Context) {
 		panic(errors.New("oopsie daisy"))
-	})))
+	})
+
+	srv := httptest.NewServer(router)
 	defer srv.Close()
 
 	t.Run("panics are logged as errors", func(t *testing.T) {
