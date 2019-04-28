@@ -1,6 +1,7 @@
 package oauth
 
 import (
+	"context"
 	"net/http"
 	"net/http/httptest"
 	"reflect"
@@ -66,7 +67,7 @@ func TestClient_ClientCredentials(t *testing.T) {
 	cli := NewClient(srv.URL)
 
 	t.Run("valid-credentials", func(t *testing.T) {
-		token, err := cli.ClientCredentials(SomeClientID, SomeClientSecret)
+		token, err := cli.ClientCredentials(context.Background(), SomeClientID, SomeClientSecret)
 		if err != nil {
 			t.Fatal("Client returned an error:", err)
 		}
@@ -77,7 +78,7 @@ func TestClient_ClientCredentials(t *testing.T) {
 	})
 
 	t.Run("invalid-credentials", func(t *testing.T) {
-		_, err := cli.ClientCredentials("foo", "bar")
+		_, err := cli.ClientCredentials(context.Background(), "foo", "bar")
 		if err == nil {
 			t.Fatal("Client should have returned an error")
 		}
@@ -95,7 +96,7 @@ func TestClient_Scopes(t *testing.T) {
 	cli := NewClient(srv.URL)
 
 	t.Run("valid-token", func(t *testing.T) {
-		got, err := cli.Scopes(SomeToken)
+		got, err := cli.Scopes(context.Background(), SomeToken)
 		if err != nil {
 			t.Fatal("Client returned an error:", err)
 		}
@@ -106,12 +107,12 @@ func TestClient_Scopes(t *testing.T) {
 	})
 
 	t.Run("invalid-token", func(t *testing.T) {
-		_, err := cli.Scopes(InvalidToken)
+		_, err := cli.Scopes(context.Background(), InvalidToken)
 		if err == nil {
 			t.Fatal("Client should have returned an error")
 		}
 
-		if err != ErrTokenInvalid {
+		if err != ErrInvalidToken {
 			t.Fatalf("Client should have returned ErrTokenInvalid, but it returned: %v instead", err)
 		}
 	})

@@ -19,8 +19,8 @@ func NewAuthenticatorWithClient(c *Client) *Authenticator {
 
 // AuthenticateHTTP request
 func (a *Authenticator) AuthenticateHTTP(ctx context.Context, user, password string) (context.Context, bool) {
-	scopes, err := a.cli.Scopes(password)
-	if err == ErrTokenInvalid {
+	scopes, err := a.cli.Scopes(ctx, password)
+	if err == ErrInvalidToken {
 		return ctx, false
 	}
 

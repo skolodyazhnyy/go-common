@@ -1,5 +1,7 @@
 package oauth
 
+import "context"
+
 // NewClientCredentials constructs OAuth client credential provider
 // For convenience in case endpoint is not configured this provider always returns empty set of credentials
 func NewClientCredentials(endpoint, client, secret string, opts ...ClientOption) *ClientCredentials {
@@ -18,12 +20,12 @@ type ClientCredentials struct {
 }
 
 // Credentials returns Authorization header
-func (c *ClientCredentials) Credentials() (string, error) {
+func (c *ClientCredentials) Credentials(ctx context.Context) (string, error) {
 	if c.cli == nil {
 		return "", nil
 	}
 
-	token, err := c.cli.ClientCredentials(c.id, c.secret)
+	token, err := c.cli.ClientCredentials(ctx, c.id, c.secret)
 	if err != nil {
 		return "", err
 	}

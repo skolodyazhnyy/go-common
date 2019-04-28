@@ -1,6 +1,7 @@
 package oauth
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"io/ioutil"
@@ -11,7 +12,7 @@ import (
 )
 
 var (
-	ErrTokenInvalid       = errors.New("token is invalid")
+	ErrInvalidToken       = errors.New("token is invalid")
 	ErrInvalidCredentials = errors.New("invalid credentials")
 	ErrReadingResponse    = errors.New("unable to read OAuth response")
 	ErrParsingResponse    = errors.New("unable to parse OAuth response")
@@ -53,7 +54,7 @@ func NewClient(endpoint string, opts ...ClientOption) *Client {
 }
 
 // ClientCredentials returns OAuth token using client credentials
-func (c *Client) ClientCredentials(id, secret string) (string, error) {
+func (c *Client) ClientCredentials(ctx context.Context, id, secret string) (string, error) {
 	if c.url == "" {
 		return "", ErrEmptyEndpoint
 	}
@@ -68,6 +69,8 @@ func (c *Client) ClientCredentials(id, secret string) (string, error) {
 	if err != nil {
 		return "", err
 	}
+
+	req = req.WithContext(ctx)
 
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
@@ -108,7 +111,7 @@ func (c *Client) ClientCredentials(id, secret string) (string, error) {
 }
 
 // Scopes for OAuth token
-func (c *Client) Scopes(token string) (scopes []string, err error) {
+func (c *Client) Scopes(ctx context.Context, token string) (scopes []string, err error) {
 	if c.url == "" {
 		return nil, ErrEmptyEndpoint
 	}
@@ -129,6 +132,8 @@ func (c *Client) Scopes(token string) (scopes []string, err error) {
 		return nil, err
 	}
 
+	req = req.WithContext(ctx)
+
 	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, err
@@ -139,7 +144,7 @@ func (c *Client) Scopes(token string) (scopes []string, err error) {
 
 	// token is invalid
 	if resp.StatusCode == 401 {
-		return nil, ErrTokenInvalid
+		return nil, ErrInvalidToken
 	}
 
 	if resp.StatusCode/100 == 4 {
