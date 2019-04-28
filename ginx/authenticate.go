@@ -6,10 +6,10 @@ import (
 	"strings"
 )
 
-// authenticator is a simple authentication service which takes context, username and password and returns
+// authenticator is a simple authentication service which takes context, type (kind) and credentials and returns
 // new context with authentication token and boolean flag to indicate if authentication was successful
 type authenticator interface {
-	AuthenticateHTTP(ctx context.Context, user, password string) (context.Context, bool)
+	AuthenticateHTTP(ctx context.Context, kind, cred string) (context.Context, bool)
 }
 
 // Authenticate middleware allows to add authentication information into request context
