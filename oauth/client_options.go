@@ -2,6 +2,8 @@ package oauth
 
 import "time"
 
+// ClientOption allows to specify additional OAuth client parameters
+// See With* functions below for list of available options
 type ClientOption func(*Client)
 
 // WithClient allows to set HTTP client instance to be used to make calls to OAuth server

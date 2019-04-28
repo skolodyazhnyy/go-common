@@ -12,7 +12,7 @@ func NewAuthenticator(url string, opts ...ClientOption) *Authenticator {
 	return NewAuthenticatorWithClient(NewClient(url, opts...))
 }
 
-// NewAuthenticator builds Authenticator with given OAuth Client
+// NewAuthenticatorWithClient builds Authenticator with given OAuth Client
 func NewAuthenticatorWithClient(c *Client) *Authenticator {
 	return &Authenticator{cli: c}
 }
@@ -20,10 +20,6 @@ func NewAuthenticatorWithClient(c *Client) *Authenticator {
 // AuthenticateHTTP request
 func (a *Authenticator) AuthenticateHTTP(ctx context.Context, user, password string) (context.Context, bool) {
 	scopes, err := a.cli.Scopes(ctx, password)
-	if err == ErrInvalidToken {
-		return ctx, false
-	}
-
 	if err != nil {
 		return ctx, false
 	}

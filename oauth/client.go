@@ -29,7 +29,7 @@ type Client struct {
 	logger logger
 }
 
-// New OAuth Client
+// NewClient for OAuth
 // Argument endpoint should point to OAuth Server root URL, use With* functions to pass additional parameters to the client
 func NewClient(endpoint string, opts ...ClientOption) *Client {
 	cli := &Client{
