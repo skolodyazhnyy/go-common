@@ -18,11 +18,15 @@ func NewAuthenticatorWithClient(c *Client) *Authenticator {
 }
 
 // AuthenticateHTTP request
-func (a *Authenticator) AuthenticateHTTP(ctx context.Context, user, password string) (context.Context, bool) {
-	scopes, err := a.cli.Scopes(ctx, password)
-	if err != nil {
-		return ctx, false
+func (a *Authenticator) AuthenticateHTTP(ctx context.Context, kind, cred string) (context.Context, error) {
+	scopes, err := a.cli.Scopes(ctx, cred)
+	if err == ErrInvalidToken {
+		return ctx, nil
 	}
 
-	return context.WithValue(ctx, contextToken, Token{Scopes: scopes}), true
+	if err != nil {
+		return ctx, err
+	}
+
+	return context.WithValue(ctx, contextToken, Token{Scopes: scopes}), nil
 }

@@ -12,9 +12,9 @@ func TestAuthenticator_AuthenticateHTTP(t *testing.T) {
 
 	auth := NewAuthenticator(srv.URL)
 
-	ctx, ok := auth.AuthenticateHTTP(context.Background(), "Bearer", SomeToken)
-	if !ok {
-		t.Error("Authentication suppose to be successful")
+	ctx, err := auth.AuthenticateHTTP(context.Background(), "Bearer", SomeToken)
+	if err != nil {
+		t.Error("Authentication suppose to be successful, got error instead:", err)
 	}
 
 	token, ok := TokenFromContext(ctx)
