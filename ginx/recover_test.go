@@ -1,8 +1,9 @@
-package ginx
+package ginx_test
 
 import (
 	"errors"
 	"github.com/gin-gonic/gin"
+	"github.com/magento-mcom/go-common/ginx"
 	"net/http"
 	"net/http/httptest"
 	"reflect"
@@ -15,7 +16,7 @@ func TestRecovery(t *testing.T) {
 	gin.SetMode(gin.ReleaseMode)
 
 	router := gin.New()
-	router.Use(Recover(log))
+	router.Use(ginx.Recover(log))
 	router.GET("/", func(c *gin.Context) {
 		panic(errors.New("oopsie daisy"))
 	})

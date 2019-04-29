@@ -1,7 +1,8 @@
-package httpx
+package httpx_test
 
 import (
 	"fmt"
+	"github.com/magento-mcom/go-common/httpx"
 	"net/http"
 	"net/http/httptest"
 	"reflect"
@@ -27,14 +28,16 @@ func (l *sliceLogger) Flush() (all []string) {
 func TestLog(t *testing.T) {
 	log := &sliceLogger{}
 
-	srv := httptest.NewServer(Log(log)(http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
+	handler := http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
 		if req.URL.Path == "/" {
 			rw.WriteHeader(http.StatusOK)
 			return
 		}
 
 		rw.WriteHeader(http.StatusInternalServerError)
-	})))
+	})
+
+	srv := httptest.NewServer(httpx.Log(log)(handler))
 	defer srv.Close()
 
 	t.Run("non 5xx are logged as debug", func(t *testing.T) {

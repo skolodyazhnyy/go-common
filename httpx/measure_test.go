@@ -1,8 +1,9 @@
-package httpx
+package httpx_test
 
 import (
 	"context"
 	"fmt"
+	"github.com/magento-mcom/go-common/httpx"
 	"net/http"
 	"net/http/httptest"
 	"reflect"
@@ -25,9 +26,11 @@ func (m *sliceMeter) Flush() (all []string) {
 func TestMeasure(t *testing.T) {
 	meter := &sliceMeter{}
 
-	srv := httptest.NewServer(Measure(meter)(http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
+	handler := http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
 		rw.WriteHeader(http.StatusOK)
-	})))
+	})
+
+	srv := httptest.NewServer(httpx.Measure(meter)(handler))
 	defer srv.Close()
 
 	_, err := http.Get(srv.URL)

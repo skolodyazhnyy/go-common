@@ -1,8 +1,9 @@
-package ginx
+package ginx_test
 
 import (
 	"context"
 	"github.com/gin-gonic/gin"
+	"github.com/magento-mcom/go-common/ginx"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -26,7 +27,7 @@ func TestAuthenticate(t *testing.T) {
 	gin.SetMode(gin.ReleaseMode)
 
 	router := gin.New()
-	router.Use(Authenticate(auth))
+	router.Use(ginx.Authenticate(auth))
 	router.GET("/", func(c *gin.Context) {
 		if token, _ := c.Request.Context().Value("token").(string); token != "foobar" {
 			c.Writer.WriteHeader(http.StatusUnauthorized)

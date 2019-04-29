@@ -1,7 +1,9 @@
 package httpx_test
 
 import (
+	"crypto/md5"
 	"errors"
+	"fmt"
 	"github.com/magento-mcom/go-common/httpx"
 	"net/http"
 	"net/http/httptest"
@@ -9,16 +11,20 @@ import (
 	"time"
 )
 
-type SignerFunc func(map[string][]string, []byte) (string, error)
+type testSigner struct {
+	failure error
+}
 
-func (f SignerFunc) Sign(headers map[string][]string, body []byte) (string, error) {
-	return f(headers, body)
+func (s testSigner) Sign(headers map[string][]string, body []byte) (string, error) {
+	h := md5.New()
+	h.Write(body) //nolint:errcheck
+	return fmt.Sprintf("%x", h.Sum(nil)), s.failure
 }
 
 func TestWithSignature(t *testing.T) {
 	srv := httptest.NewServer(http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
-		if req.Header.Get("X-Signature") != "FooSignature" {
-			t.Error("Request is not signed")
+		if sign := req.Header.Get("X-Signature"); sign != "d41d8cd98f00b204e9800998ecf8427e" {
+			t.Error("Request is not signed or signature is invalid, got:", sign)
 		}
 
 		rw.WriteHeader(http.StatusOK)
@@ -28,9 +34,7 @@ func TestWithSignature(t *testing.T) {
 	t.Run("signature-ok", func(t *testing.T) {
 		cli := httpx.NewClient(
 			&http.Client{Timeout: time.Second},
-			httpx.WithSignature(SignerFunc(func(headers map[string][]string, body []byte) (string, error) {
-				return "FooSignature", nil
-			})),
+			httpx.WithSignature(testSigner{}),
 		)
 
 		req, err := http.NewRequest(http.MethodGet, srv.URL, nil)
@@ -55,9 +59,7 @@ func TestWithSignature(t *testing.T) {
 
 		cli := httpx.NewClient(
 			&http.Client{Timeout: time.Second},
-			httpx.WithSignature(SignerFunc(func(headers map[string][]string, body []byte) (string, error) {
-				return "", want
-			})),
+			httpx.WithSignature(testSigner{failure: want}),
 		)
 
 		req, err := http.NewRequest(http.MethodGet, srv.URL, nil)

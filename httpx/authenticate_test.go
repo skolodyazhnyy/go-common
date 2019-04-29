@@ -1,16 +1,17 @@
-package httpx
+package httpx_test
 
 import (
 	"context"
+	"github.com/magento-mcom/go-common/httpx"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 )
 
-type authenticatorFunc func(ctx context.Context, username, password string) (context.Context, bool)
+type authenticatorFunc func(ctx context.Context, kind, cred string) (context.Context, bool)
 
-func (f authenticatorFunc) AuthenticateHTTP(ctx context.Context, username, password string) (context.Context, bool) {
-	return f(ctx, username, password)
+func (f authenticatorFunc) AuthenticateHTTP(ctx context.Context, kind, cred string) (context.Context, bool) {
+	return f(ctx, kind, cred)
 }
 
 func TestAuthenticate(t *testing.T) {
@@ -22,14 +23,16 @@ func TestAuthenticate(t *testing.T) {
 		return ctx, false
 	})
 
-	srv := httptest.NewServer(Authenticate(auth)(http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
+	handler := http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
 		if token, _ := req.Context().Value("token").(string); token != "foobar" {
 			rw.WriteHeader(http.StatusUnauthorized)
 			return
 		}
 
 		rw.WriteHeader(http.StatusOK)
-	})))
+	})
+
+	srv := httptest.NewServer(httpx.Authenticate(auth)(handler))
 	defer srv.Close()
 
 	t.Run("valid credentials", func(t *testing.T) {

@@ -1,7 +1,8 @@
-package httpx
+package httpx_test
 
 import (
 	"errors"
+	"github.com/magento-mcom/go-common/httpx"
 	"net/http"
 	"net/http/httptest"
 	"reflect"
@@ -10,10 +11,12 @@ import (
 
 func TestRecovery(t *testing.T) {
 	log := &sliceLogger{}
-	
-	srv := httptest.NewServer(Recover(log)(http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
+
+	handler := http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
 		panic(errors.New("oopsie daisy"))
-	})))
+	})
+
+	srv := httptest.NewServer(httpx.Recover(log)(handler))
 	defer srv.Close()
 
 	t.Run("panics are logged as errors", func(t *testing.T) {

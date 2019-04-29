@@ -17,7 +17,7 @@ router.Use(
 
 ```
 
-#### Authenticate
+### Authenticate
 
 Authenticate middleware abstracts authentication for every request. It takes authenticator instance which adds authentication information into request's context. 
 
@@ -29,7 +29,7 @@ router.Use(ginx.Authenticate(
 
 Later request can be authorized using authentication information from request's context. See `oauth` package documentation for authorization example.
 
-#### Log
+### Log
 
 Log middleware allows to log every request received by HTTP server.
 
@@ -37,18 +37,26 @@ Log middleware allows to log every request received by HTTP server.
 router.Use(ginx.Log(logger))
 ```
 
-#### Recovery
+### Recover
 
-Recovery middleware allows to recover in case HTTP handler rise panic. It take logger to log error in case of panic.
+Recover middleware allows to recover in case HTTP handler rises panic. It takes logger to log error in case of panic.
 
 ```go
 router.Use(ginx.Recover(logger))
 ```
 
-#### Measure
+### Measure
 
 Measure middleware allows to add metrics for HTTP server. It reports number of requests processed by server and their latency.
 
 ```go
 router.Use(ginx.Measure(telemetry))
+```
+
+### VerifySignature
+
+VerifySignature middleware allows to check request's signature in X-Signature header and reject request if it does not match expected value.
+
+```go
+router.Use(ginx.VerifySignature(signer, log))
 ```

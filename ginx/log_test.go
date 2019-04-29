@@ -1,8 +1,9 @@
-package ginx
+package ginx_test
 
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/magento-mcom/go-common/ginx"
 	"net/http"
 	"net/http/httptest"
 	"reflect"
@@ -31,7 +32,7 @@ func TestLog(t *testing.T) {
 	gin.SetMode(gin.ReleaseMode)
 
 	router := gin.New()
-	router.Use(Log(log))
+	router.Use(ginx.Log(log))
 	router.GET("/", func(c *gin.Context) {
 		c.Writer.WriteHeader(http.StatusOK)
 	})
