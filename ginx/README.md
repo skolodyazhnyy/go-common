@@ -22,9 +22,7 @@ router.Use(
 Authenticate middleware abstracts authentication for every request. It takes authenticator instance which adds authentication information into request's context. 
 
 ```go
-router.Use(ginx.Authenticate(
-	oauth.Authenticator(...),
-))
+router.Use(ginx.Authenticate(oauth.NewAuthenticator(...), log.Channel("http")))
 ```
 
 Later request can be authorized using authentication information from request's context. See `oauth` package documentation for authorization example.

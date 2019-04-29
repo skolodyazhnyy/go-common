@@ -8,19 +8,19 @@ import (
 	"testing"
 )
 
-type authenticatorFunc func(ctx context.Context, kind, cred string) (context.Context, bool)
+type authenticatorFunc func(ctx context.Context, kind, cred string) (context.Context, error)
 
-func (f authenticatorFunc) AuthenticateHTTP(ctx context.Context, kind, cred string) (context.Context, bool) {
+func (f authenticatorFunc) AuthenticateHTTP(ctx context.Context, kind, cred string) (context.Context, error) {
 	return f(ctx, kind, cred)
 }
 
 func TestAuthenticate(t *testing.T) {
-	auth := authenticatorFunc(func(ctx context.Context, kind, cred string) (context.Context, bool) {
+	auth := authenticatorFunc(func(ctx context.Context, kind, cred string) (context.Context, error) {
 		if kind == "Basic" && cred == "Z3Vlc3Q6Z3Vlc3Q=" {
-			return context.WithValue(ctx, "token", "foobar"), true
+			return context.WithValue(ctx, "token", "foobar"), nil
 		}
 
-		return ctx, false
+		return ctx, nil
 	})
 
 	handler := http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
@@ -32,7 +32,7 @@ func TestAuthenticate(t *testing.T) {
 		rw.WriteHeader(http.StatusOK)
 	})
 
-	srv := httptest.NewServer(httpx.Authenticate(auth)(handler))
+	srv := httptest.NewServer(httpx.Authenticate(auth, &sliceLogger{})(handler))
 	defer srv.Close()
 
 	t.Run("valid credentials", func(t *testing.T) {

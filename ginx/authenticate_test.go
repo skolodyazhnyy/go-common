@@ -9,25 +9,25 @@ import (
 	"testing"
 )
 
-type authenticatorFunc func(ctx context.Context, username, password string) (context.Context, bool)
+type authenticatorFunc func(ctx context.Context, username, password string) (context.Context, error)
 
-func (f authenticatorFunc) AuthenticateHTTP(ctx context.Context, username, password string) (context.Context, bool) {
+func (f authenticatorFunc) AuthenticateHTTP(ctx context.Context, username, password string) (context.Context, error) {
 	return f(ctx, username, password)
 }
 
 func TestAuthenticate(t *testing.T) {
-	auth := authenticatorFunc(func(ctx context.Context, kind, cred string) (context.Context, bool) {
+	auth := authenticatorFunc(func(ctx context.Context, kind, cred string) (context.Context, error) {
 		if kind == "Basic" && cred == "Z3Vlc3Q6Z3Vlc3Q=" {
-			return context.WithValue(ctx, "token", "foobar"), true
+			return context.WithValue(ctx, "token", "foobar"), nil
 		}
 
-		return ctx, false
+		return ctx, nil
 	})
 
 	gin.SetMode(gin.ReleaseMode)
 
 	router := gin.New()
-	router.Use(ginx.Authenticate(auth))
+	router.Use(ginx.Authenticate(auth, &sliceLogger{}))
 	router.GET("/", func(c *gin.Context) {
 		if token, _ := c.Request.Context().Value("token").(string); token != "foobar" {
 			c.Writer.WriteHeader(http.StatusUnauthorized)
