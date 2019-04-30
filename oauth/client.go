@@ -25,32 +25,23 @@ var (
 type Client struct {
 	url    string
 	client httpClient
-	cache  cache
-	logger logger
 }
 
 // NewClient for OAuth
 // Argument endpoint should point to OAuth Server root URL, use With* functions to pass additional parameters to the client
-func NewClient(endpoint string, opts ...ClientOption) *Client {
-	cli := &Client{
-		url: strings.TrimSuffix(endpoint, "/"),
-		cache: &simpleCache{
-			values:        make(map[string]interface{}),
-			expire:        make(map[string]time.Time),
-			lastSweep:     time.Now(),
-			sweepInterval: time.Minute,
-		},
-		logger: &nopLogger{},
-		client: &http.Client{
-			Timeout: 5 * time.Second,
-		},
+func NewClient(endpoint string, opts ...Option) *Client {
+	o := &options{
+		client: &http.Client{Timeout: 5 * time.Second},
 	}
 
 	for _, opt := range opts {
-		opt(cli)
+		opt(o)
 	}
 
-	return cli
+	return &Client{
+		url:    strings.TrimSuffix(endpoint, "/"),
+		client: o.client,
+	}
 }
 
 // ClientCredentials returns OAuth token using client credentials
@@ -116,17 +107,6 @@ func (c *Client) Scopes(ctx context.Context, token string) (scopes []string, err
 		return nil, ErrEmptyEndpoint
 	}
 
-	key := "oauth_token_scopes_" + token
-
-	ok, err := c.cache.Get(key, &scopes)
-	if err == nil && ok {
-		return scopes, nil
-	}
-
-	if err != nil {
-		c.logger.Error("Unable to read OAuth scopes cache", map[string]interface{}{"error": err.Error()})
-	}
-
 	req, err := http.NewRequest(http.MethodGet, c.url+"/token/"+url.QueryEscape(string(token))+"/scopes", nil)
 	if err != nil {
 		return nil, err
@@ -166,10 +146,6 @@ func (c *Client) Scopes(ctx context.Context, token string) (scopes []string, err
 
 	if err = json.Unmarshal(body, &data); err != nil {
 		return nil, ErrParsingResponse
-	}
-
-	if err := c.cache.Set(key, data.Scopes, time.Minute); err != nil {
-		c.logger.Error("Unable to write OAuth scopes cache", map[string]interface{}{"error": err.Error()})
 	}
 
 	return data.Scopes, nil

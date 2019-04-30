@@ -5,17 +5,21 @@ import (
 )
 
 type cache interface {
-	Set(key string, value interface{}, ttl time.Duration) error
-	Get(key string, value interface{}) (bool, error)
+	// ShouldSet attempts to set value, in case value can not be set (for example due to an error)
+	// this method should log error and return false
+	ShouldSet(key string, value interface{}, ttl time.Duration) bool
+	// ShouldGet attempts to get value, in case value can not be loaded (for example due to an error)
+	// this method should log error and return false
+	ShouldGet(key string, value interface{}) bool
 }
 
 type nopCache struct {
 }
 
-func (nopCache) Set(key string, value interface{}, ttl time.Duration) error {
-	return nil
+func (nopCache) ShouldSet(key string, value interface{}, ttl time.Duration) bool {
+	return false
 }
 
-func (nopCache) Get(key string, value interface{}) (bool, error) {
-	return false, nil
+func (nopCache) ShouldGet(key string, value interface{}) bool {
+	return false
 }

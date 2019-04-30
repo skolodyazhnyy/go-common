@@ -1,7 +1,6 @@
 package oauth
 
 import (
-	"errors"
 	"reflect"
 	"sync"
 	"time"
@@ -15,8 +14,8 @@ type simpleCache struct {
 	sweepInterval time.Duration
 }
 
-// Set cache element
-func (c *simpleCache) Set(key string, value interface{}, ttl time.Duration) error {
+// ShouldSet cache element
+func (c *simpleCache) ShouldSet(key string, value interface{}, ttl time.Duration) bool {
 	c.lock.Lock()
 	defer c.lock.Unlock()
 
@@ -30,41 +29,41 @@ func (c *simpleCache) Set(key string, value interface{}, ttl time.Duration) erro
 		c.expire[key] = time.Now().Add(ttl)
 	}
 
-	return nil
+	return true
 }
 
-// Get cache element
-func (c *simpleCache) Get(key string, value interface{}) (bool, error) {
+// ShouldGet cache element
+func (c *simpleCache) ShouldGet(key string, value interface{}) bool {
 	c.lock.RLock()
 	defer c.lock.RUnlock()
 
 	if expires, ok := c.expire[key]; ok && expires.Before(time.Now()) {
-		return false, nil
+		return false
 	}
 
 	cached, ok := c.values[key]
 	if !ok {
-		return false, nil
+		return false
 	}
 
 	ref := reflect.ValueOf(value)
 	if ref.Kind() != reflect.Ptr {
-		return false, errors.New("value receiver is not a pointer")
+		return false
 	}
 
 	ref = ref.Elem()
 
 	if !ref.CanSet() {
-		return false, errors.New("value can not be set")
+		return false
 	}
 
 	if !reflect.TypeOf(cached).AssignableTo(ref.Type()) {
-		return false, errors.New("cache type does not match expected type")
+		return false
 	}
 
 	ref.Set(reflect.ValueOf(cached))
 
-	return true, nil
+	return true
 }
 
 // sweep expired elements, this method assumes lock is set

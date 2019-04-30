@@ -25,18 +25,13 @@ func TestSimpleCache(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			if err := cache.Set(test.key, test.value, test.ttl); err != nil {
-				t.Error("An error occurred while setting cache key:", err)
+			if ok := cache.ShouldSet(test.key, test.value, test.ttl); !ok {
+				t.Error("Cache is not set")
 			}
 
 			var got []string
 
-			ok, err := cache.Get(test.key, &got)
-			if err != nil {
-				t.Fatal("Value can not be read:", err.Error())
-			}
-
-			if !ok {
+			if !cache.ShouldGet(test.key, &got) {
 				t.Fatal("Key is not present in the cache")
 			}
 

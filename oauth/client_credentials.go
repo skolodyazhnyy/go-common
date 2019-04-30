@@ -4,7 +4,7 @@ import "context"
 
 // NewClientCredentials constructs OAuth client credential provider
 // For convenience in case endpoint is not configured this provider always returns empty set of credentials
-func NewClientCredentials(endpoint, client, secret string, opts ...ClientOption) *ClientCredentials {
+func NewClientCredentials(endpoint, client, secret string, opts ...Option) *ClientCredentials {
 	return &ClientCredentials{
 		cli:    NewClient(endpoint, opts...),
 		id:     client,
