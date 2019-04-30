@@ -73,7 +73,7 @@ func (c *Client) ClientCredentials(ctx context.Context, id, secret string) (stri
 	//nolint:errcheck
 	defer resp.Body.Close()
 
-	if resp.StatusCode == 401 {
+	if resp.StatusCode == http.StatusUnauthorized {
 		return "", ErrInvalidCredentials
 	}
 
@@ -123,7 +123,7 @@ func (c *Client) Scopes(ctx context.Context, token string) (scopes []string, err
 	defer resp.Body.Close()
 
 	// token is invalid
-	if resp.StatusCode == 401 {
+	if resp.StatusCode == http.StatusUnauthorized {
 		return nil, ErrInvalidToken
 	}
 
