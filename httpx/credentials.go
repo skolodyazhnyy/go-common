@@ -46,7 +46,7 @@ func WithCredentials(cred credentials) func(Client) Client {
 					return
 				}
 
-				if resp.StatusCode != 401 {
+				if resp.StatusCode != http.StatusUnauthorized {
 					return
 				}
 

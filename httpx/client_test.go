@@ -36,7 +36,7 @@ func ExampleNewClient() {
 	defer resp.Body.Close()
 
 	// check response
-	if resp.StatusCode != 200 {
+	if resp.StatusCode != http.StatusOK {
 		panic(fmt.Errorf("non-200 response, got %v", resp.StatusCode))
 	}
 
@@ -66,7 +66,7 @@ func TestNewClient(t *testing.T) {
 	//nolint:errcheck
 	defer resp.Body.Close()
 
-	if resp.StatusCode != 200 {
+	if resp.StatusCode != http.StatusOK {
 		t.Errorf("Response status code is not 200, got %v instead", resp.StatusCode)
 	}
 

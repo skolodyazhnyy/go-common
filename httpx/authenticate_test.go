@@ -50,11 +50,11 @@ func TestAuthenticate(t *testing.T) {
 
 		defer resp.Body.Close() //nolint:errcheck
 
-		if resp.StatusCode == 401 {
+		if resp.StatusCode == http.StatusUnauthorized {
 			t.Error("Test server replied 401, which probably means credentials are not properly parsed")
 		}
 
-		if resp.StatusCode != 200 {
+		if resp.StatusCode != http.StatusOK {
 			t.Errorf("Test server replied non-200, got %v instead", resp.StatusCode)
 		}
 	})
@@ -72,7 +72,7 @@ func TestAuthenticate(t *testing.T) {
 
 		defer resp.Body.Close() //nolint:errcheck
 
-		if resp.StatusCode != 401 {
+		if resp.StatusCode != http.StatusUnauthorized {
 			t.Errorf("Test server replied non-401, got %v instead", resp.StatusCode)
 		}
 	})
@@ -92,7 +92,7 @@ func TestAuthenticate(t *testing.T) {
 
 		defer resp.Body.Close() //nolint:errcheck
 
-		if resp.StatusCode != 401 {
+		if resp.StatusCode != http.StatusUnauthorized {
 			t.Errorf("Test server replied non-401, got %v instead", resp.StatusCode)
 		}
 	})

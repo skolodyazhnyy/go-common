@@ -37,7 +37,7 @@ func TestWithHeaders(t *testing.T) {
 
 	defer resp.Body.Close() //nolint:errcheck
 
-	if resp.StatusCode != 200 {
+	if resp.StatusCode != http.StatusOK {
 		t.Errorf("Response status code is not 200, got %v instead", resp.StatusCode)
 	}
 }
