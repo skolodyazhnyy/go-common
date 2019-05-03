@@ -4,8 +4,7 @@ Telemetry reporter package to send metrics to datadog.
 
 ## Usage
 
-Create telemetry reporter using `New` constructor. It takes, logger instance, Statsd address, application prefix and 
-list of global tags attached to all metrics.
+Create telemetry reporter using `New` constructor. It takes, logger instance, Statsd address, application prefix (must end with a dot) and list of global tags attached to all metrics.
 
 In case statsd address is empty, constructor will return `Discard` telemetry reporter.
 
