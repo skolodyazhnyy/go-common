@@ -13,8 +13,8 @@ Client middleware can be incorporated using `httpx.NewClient` constructor. It ta
 ```go
 client := httpx.NewClient(
 	&http.Client{Timeout: 30 * time.Second},
-	WithHeaders(...),
-	WithCredentials(...),	
+	httpx.WithHeaders(...),
+	httpx.WithCredentials(...),	
 )
 ```
 
