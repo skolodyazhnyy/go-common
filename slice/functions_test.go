@@ -7,7 +7,7 @@ import (
 
 func TestDifference(t *testing.T) {
 
-	var difftests = []struct {
+	difftests := []struct {
 		name     string
 		in1      []string
 		in2      []string
