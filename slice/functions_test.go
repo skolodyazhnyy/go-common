@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func TestDifferenceCaseOne(t *testing.T) {
+func TestDifference(t *testing.T) {
 
 	var difftests = []struct {
 		name     string
