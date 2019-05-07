@@ -108,3 +108,11 @@ ctx = telemetry.AppendContext(ctx, []string{"merchant:luma"})
 meter.Incr(ctx, "request_count", []string{"topic:create_order"}) 
 // will report metric with tags: "merchant:luma" and "topic:create_order"
 ```
+
+### DBStats
+
+Database stats (number of open connections and other metrics) can be reported using `telemetry.DBStats` reporter. It takes database connection and list of tags, for example with database name.
+
+```go
+meter.Report(telemetry.DBStats(db, []string{"db:default"}))
+```
