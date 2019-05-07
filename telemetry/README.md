@@ -116,3 +116,10 @@ Database stats (number of open connections and other metrics) can be reported us
 ```go
 meter.Report(telemetry.DBStats(db, []string{"db:default"}))
 ```
+
+In case application uses multiple connections, we can assign different tags:
+
+```go
+meter.Report(telemetry.DBStats(dbWriter, []string{"db:writer"}))
+meter.Report(telemetry.DBStats(dbReader, []string{"db:reader"}))
+```
