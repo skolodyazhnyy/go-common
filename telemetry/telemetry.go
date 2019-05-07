@@ -23,13 +23,10 @@ func New(log logger, addr, prefix string, tags []string) (*Telemetry, error) {
 		return Discard, nil
 	}
 
-	cli, err := statsd.New(addr)
+	cli, err := statsd.New(addr, statsd.WithAsyncUDS(), statsd.Buffered(), statsd.WithNamespace(prefix), statsd.WithTags(tags))
 	if err != nil {
 		return nil, err
 	}
-
-	cli.Namespace = prefix
-	cli.Tags = tags
 
 	ctx, cancel := context.WithCancel(context.Background())
 
