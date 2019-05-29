@@ -1,11 +1,9 @@
 # ConfigSystem
-
 Config system package provides an easy way communicate against orygn. 
 
 ## Implemented endpoints
 
-### Value
-
+### `Value`
 Gets a single node/value:
 
 ```go
