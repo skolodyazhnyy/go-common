@@ -8,8 +8,7 @@ import (
 	"net/url"
 )
 
-// HTTPClient is well-known HTTP client interface
-type HTTPClient interface {
+type httpClient interface {
 	Do(*http.Request) (*http.Response, error)
 }
 
@@ -17,11 +16,11 @@ type HTTPClient interface {
 type Client struct {
 	url        string
 	env        string
-	httpClient HTTPClient
+	httpClient httpClient
 }
 
 // NewClient creates a new client instance
-func NewClient(url string, env string, httpClient HTTPClient) *Client {
+func NewClient(url string, env string, httpClient httpClient) *Client {
 	return &Client{
 		url:        url,
 		env:        env,
