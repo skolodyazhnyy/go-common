@@ -68,7 +68,7 @@ func TestValue(t *testing.T) {
 		}
 
 		d, _ := json.Marshal(expectedValue)
-		rw.Write(d)
+		_, _ = rw.Write(d)
 	}))
 
 	defer srv.Close()
