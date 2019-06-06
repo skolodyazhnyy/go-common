@@ -93,7 +93,7 @@ func (c *Client) get(endpoint string) ([]byte, error) {
 }
 
 func escapef(format string, a ...string) string {
-	parts := []interface{}{}
+	var parts []interface{}
 
 	for _, arg := range a {
 		parts = append(parts, url.PathEscape(arg))
