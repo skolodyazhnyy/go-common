@@ -9,13 +9,13 @@ import (
 )
 
 func TestNewClient(t *testing.T) {
-	host := "url"
+	url := "http://url.com"
 	env := "environment"
 	httpc := &http.Client{}
 
-	cli := NewClient(host, env, httpc)
+	cli := NewClient(url, env, httpc)
 	expected := &Client{
-		host:       host,
+		url:        url,
 		env:        env,
 		httpClient: httpc,
 	}

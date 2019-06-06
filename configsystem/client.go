@@ -15,15 +15,15 @@ type HTTPClient interface {
 
 // Client communicates with config-system
 type Client struct {
-	host       string
+	url        string
 	env        string
 	httpClient HTTPClient
 }
 
 // NewClient creates a new client instance
-func NewClient(host string, env string, httpClient HTTPClient) *Client {
+func NewClient(url string, env string, httpClient HTTPClient) *Client {
 	return &Client{
-		host:       host,
+		url:        url,
 		env:        env,
 		httpClient: httpClient,
 	}
@@ -71,7 +71,7 @@ func (c *Client) Value(client string, scope string, key string, v interface{}) e
 }
 
 func (c *Client) get(endpoint string) ([]byte, error) {
-	url := fmt.Sprintf("%s%s", c.host, endpoint)
+	url := fmt.Sprintf("%s%s", c.url, endpoint)
 
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
