@@ -38,7 +38,9 @@ func (c *Client) Clients() ([]string, error) {
 	}
 
 	clients := []string{}
-	data := []struct{ ID string }{}
+	data := []struct {
+		ID string `json:"id"`
+	}{}
 
 	err = json.Unmarshal(body, &data)
 	if err != nil {
