@@ -6,19 +6,22 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
-
-	"github.com/magento-mcom/go-common/httpx"
 )
+
+// HTTPClient is well-known HTTP client interface
+type HTTPClient interface {
+	Do(*http.Request) (*http.Response, error)
+}
 
 // Client communicates with config-system
 type Client struct {
 	host       string
 	env        string
-	httpClient httpx.Client
+	httpClient HTTPClient
 }
 
 // NewClient creates a new client instance
-func NewClient(host string, env string, httpClient httpx.Client) *Client {
+func NewClient(host string, env string, httpClient HTTPClient) *Client {
 	return &Client{
 		host:       host,
 		env:        env,
