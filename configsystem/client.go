@@ -66,9 +66,9 @@ func (c *Client) Value(client string, scope string, key string, v interface{}) e
 }
 
 func (c *Client) get(endpoint string) ([]byte, error) {
-	url := fmt.Sprintf("%s%s", c.url, endpoint)
+	addr := c.url + endpoint
 
-	req, err := http.NewRequest("GET", url, nil)
+	req, err := http.NewRequest(http.MethodGet, addr, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -79,7 +79,7 @@ func (c *Client) get(endpoint string) ([]byte, error) {
 	}
 
 	if res.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("Status %d requesting %s", res.StatusCode, url)
+		return nil, fmt.Errorf("Status %d requesting %s", res.StatusCode, addr)
 	}
 
 	defer res.Body.Close()
