@@ -1,4 +1,4 @@
-.PHONY: dep run test build check format vet rpm
+.PHONY: dep lint test coverage
 
 GO := go
 NAME := go-common
