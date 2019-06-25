@@ -15,33 +15,33 @@ pipeline:
     commands:
       - "make lint"
 
-  # test-1-9:
-  #   group: test
-  #   image: mcom/gobuilder:1.9
-  #   pull: true
-  #   commands:
-  #     - "make test"
+  test-1-9:
+    group: test
+    image: mcom/gobuilder:1.9
+    pull: true
+    commands:
+      - "make test"
 
-  # test-1-10:
-  #   group: test
-  #   image: mcom/gobuilder:1.10
-  #   pull: true
-  #   commands:
-  #     - "make test"
+  test-1-10:
+    group: test
+    image: mcom/gobuilder:1.10
+    pull: true
+    commands:
+      - "make test"
 
-  # test-1-11:
-  #   group: test
-  #   image: mcom/gobuilder:1.11
-  #   pull: true
-  #   commands:
-  #     - "make test"
+  test-1-11:
+    group: test
+    image: mcom/gobuilder:1.11
+    pull: true
+    commands:
+      - "make test"
 
-  # test-1-12:
-  #   group: test
-  #   image: mcom/gobuilder:1.12
-  #   pull: true
-  #   commands:
-  #     - "make test"
+  test-1-12:
+    group: test
+    image: mcom/gobuilder:1.12
+    pull: true
+    commands:
+      - "make test"
 
   coverage:
     group: test
