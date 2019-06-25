@@ -22,6 +22,6 @@ cover:
 	$(GO) test $(PACKAGE_DIRS) --cover >> $(COVER_RAW)
 
 emojify:
-	echo "```" > $(COVER_MSG)
+	echo '```' > $(COVER_MSG)
 	cat $(COVER_RAW) >> $(COVER_MSG)
-	echo "```" >> $(COVER_MSG)
+	echo '```' >> $(COVER_MSG)
