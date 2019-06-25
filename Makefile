@@ -6,6 +6,8 @@ OS := $(shell uname)
 PACKAGE_DIRS := $(shell $(GO) list ./... | grep -v /vendor/)
 PKGS := $(shell go list ./... | grep -v /vendor)
 PKGS := $(subst  :,_,$(PKGS))
+COVER_RAW := coverage.raw
+COVER_MSG := coverage.msg
 
 dep:
 	go get ./...
@@ -17,10 +19,9 @@ test:
 	go test ./...
 
 cover:
-	$(GO) test $(PACKAGE_DIRS) --cover > coverage.txt
+	$(GO) test $(PACKAGE_DIRS) --cover >> $(COVER_RAW)
 
-coverage:
-	$(eval PACKAGES_COVERAGE := $(shell $(GO) test $(PACKAGE_DIRS) --cover | awk '{if ($$1 != "?") print $$5; else print "0.0";}' | sed 's/\%//g' | awk '{s+=$$1} END {printf "%.2f\n", s}'))
-	$(eval PACKAGES_NUM := $(shell $(GO) test $(PACKAGE_DIRS) --cover | wc -l))
-	$(eval TOTAL_COVERAGE := $(( $(PACKAGES_COVERAGE) / $(PACKAGES_NUM) )) )
-	@ printf "Total coverage of %s: %s%%\n" "$(NAME)" "$(TOTAL_COVERAGE)"
+emojify:
+	echo "```" > $(COVER_MSG)
+	cat $(COVER_RAW) >> $(COVER_MSG)
+	echo "```" >> $(COVER_MSG)

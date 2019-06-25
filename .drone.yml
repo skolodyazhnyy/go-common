@@ -49,11 +49,12 @@ pipeline:
     pull: true
     commands:
       - "make cover"
+      - "make emojify"
 
-  github-cover:
+  github-publish-coverage:
     image: jmccann/drone-github-comment:1
     pull: true
     when:
       event: pull_request
     secrets: [ GITHUB_TOKEN ]
-    message_file: coverage.txt
+    message_file: coverage.msg
