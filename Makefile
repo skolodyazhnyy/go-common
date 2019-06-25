@@ -1,11 +1,7 @@
-.PHONY: dep lint test coverage
+.PHONY: dep lint test cover emojify
 
 GO := go
-NAME := go-common
-OS := $(shell uname)
 PACKAGE_DIRS := $(shell $(GO) list ./... | grep -v /vendor/)
-PKGS := $(shell go list ./... | grep -v /vendor)
-PKGS := $(subst  :,_,$(PKGS))
 COVER_MSG := coverage.msg
 
 dep:
