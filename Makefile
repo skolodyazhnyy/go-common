@@ -19,9 +19,12 @@ test:
 	go test ./...
 
 cover:
-	$(GO) test $(PACKAGE_DIRS) --cover >> $(COVER_RAW)
+	$(GO) test $(PACKAGE_DIRS) --cover > $(COVER_RAW)
 
 emojify:
 	echo '```' > $(COVER_MSG)
 	cat $(COVER_RAW) >> $(COVER_MSG)
 	echo '```' >> $(COVER_MSG)
+	sed -i 's/ok/:white_check_mark:/g' $(COVER_MSG)
+	sed -i 's/?/:broken_heart:/g' $(COVER_MSG)
+	sed -i 's/FAIL/FAIL :tomato:/g' $(COVER_MSG)
