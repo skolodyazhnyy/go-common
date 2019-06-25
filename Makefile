@@ -21,6 +21,4 @@ cover:
 	$(GO) test $(PACKAGE_DIRS) --cover > $(COVER_MSG)
 
 emojify:
-	sed -i 's/ok/:white_check_mark:/g' $(COVER_MSG)
-	sed -i 's/?/:broken_heart:/g' $(COVER_MSG)
-	sed -i 's/FAIL/FAIL :tomato:/g' $(COVER_MSG)
+	./.drone/coverage_emojify $(COVER_MSG)
