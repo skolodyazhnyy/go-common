@@ -48,4 +48,12 @@ pipeline:
     image: mcom/gobuilder:1.12
     pull: true
     commands:
-      - "make coverage"
+      - "make cover"
+
+  github-cover:
+    image: jmccann/drone-github-comment:1
+    pull: true
+    when:
+      event: pull_request
+    secrets: [ GITHUB_TOKEN ]
+    message_file: coverage.txt
