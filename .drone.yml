@@ -47,9 +47,11 @@ pipeline:
     group: test
     image: mcom/gobuilder:1.12
     pull: true
+    environment:
+      COVER_MSG: "coverage.msg"
     commands:
       - "make cover"
-      - "make emojify"
+      - "./.drone/coverage_emojify coverage.msg"
 
   github-publish-coverage:
     image: jmccann/drone-github-comment:1

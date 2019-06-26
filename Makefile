@@ -2,7 +2,7 @@
 
 GO := go
 PACKAGE_DIRS := $(shell $(GO) list ./... | grep -v /vendor/)
-COVER_MSG := coverage.msg
+COVER_MSG ?= coverage.msg
 
 dep:
 	go get ./...
@@ -15,6 +15,3 @@ test:
 
 cover:
 	$(GO) test $(PACKAGE_DIRS) --cover > $(COVER_MSG)
-
-emojify:
-	./.drone/coverage_emojify $(COVER_MSG)
