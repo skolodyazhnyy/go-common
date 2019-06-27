@@ -7,38 +7,48 @@ pipeline:
     image: mcom/gobuilder:1.9
     pull: true
     commands:
-      - "go get ./..."
+      - "make dep"
 
   lint:
     image: golangci/golangci-lint:v1.16.0
     pull: true
     commands:
-      - "golangci-lint run"
+      - "make lint"
 
   test-1-9:
     group: test
     image: mcom/gobuilder:1.9
     pull: true
     commands:
-      - "go test ./..."
+      - "make test"
 
   test-1-10:
     group: test
     image: mcom/gobuilder:1.10
     pull: true
     commands:
-      - "go test ./..."
+      - "make test"
 
   test-1-11:
     group: test
     image: mcom/gobuilder:1.11
     pull: true
     commands:
-      - "go test ./..."
+      - "make test"
 
   test-1-12:
     group: test
     image: mcom/gobuilder:1.12
     pull: true
     commands:
-      - "go test ./..."
+      - "make test"
+
+  coverage-report:
+    group: publish
+    image: mcom/go-coverage-persistor:latest
+    pull: true
+    environment:
+      COVER_FILE: "coverage.out"
+    when:
+      event: pull_request
+    secrets: [ GITHUB_TOKEN ]
