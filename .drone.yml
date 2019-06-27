@@ -9,32 +9,32 @@ pipeline:
     commands:
       - "make dep"
 
-  # lint:
-  #   image: golangci/golangci-lint:v1.16.0
-  #   pull: true
-  #   commands:
-  #     - "make lint"
+  lint:
+    image: golangci/golangci-lint:v1.16.0
+    pull: true
+    commands:
+      - "make lint"
 
-  # test-1-9:
-  #   group: test
-  #   image: mcom/gobuilder:1.9
-  #   pull: true
-  #   commands:
-  #     - "make test"
+  test-1-9:
+    group: test
+    image: mcom/gobuilder:1.9
+    pull: true
+    commands:
+      - "make test"
 
-  # test-1-10:
-  #   group: test
-  #   image: mcom/gobuilder:1.10
-  #   pull: true
-  #   commands:
-  #     - "make test"
+  test-1-10:
+    group: test
+    image: mcom/gobuilder:1.10
+    pull: true
+    commands:
+      - "make test"
 
-  # test-1-11:
-  #   group: test
-  #   image: mcom/gobuilder:1.11
-  #   pull: true
-  #   commands:
-  #     - "make test"
+  test-1-11:
+    group: test
+    image: mcom/gobuilder:1.11
+    pull: true
+    commands:
+      - "make test"
 
   test-1-12:
     group: test
@@ -44,7 +44,7 @@ pipeline:
       - "make test"
 
   coverage:
-    group: test
+    group: coverage
     image: mcom/gobuilder:1.12
     pull: true
     commands:
@@ -53,6 +53,7 @@ pipeline:
       - "cat coverage.out"
 
   coverage-persistor:
+    group: publish
     image: mcom/go-coverage-persistor:latest
     pull: true
     environment:
