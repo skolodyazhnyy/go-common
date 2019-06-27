@@ -48,22 +48,25 @@ pipeline:
     image: mcom/gobuilder:1.12
     pull: true
     environment:
-      COVER_MSG: "coverage.msg"
+      COVER_OUT: "coverage.out"
     commands:
-      - "make cover"
-      - "./.drone/coverage_emojify coverage.msg"
+      - "go get github.com/ory/go-acc"
+      - "go-acc ./... > ${COVER_OUT}"
+      - "cat coverage.out"
 
-  github-publish-coverage:
-    image: jmccann/drone-github-comment:1
-    pull: true
-    when:
-      event: pull_request
-    secrets: [ GITHUB_TOKEN ]
-    message_file: coverage.msg
+  # github-publish-coverage:
+  #   image: jmccann/drone-github-comment:1
+  #   pull: true
+  #   when:
+  #     event: pull_request
+  #   secrets: [ GITHUB_TOKEN ]
+  #   message_file: coverage.msg
 
   coverage-persistor:
     image: mcom/go-coverage-persistor:latest
     pull: true
+    environment:
+      COVER_OUT: "coverage.out"
     when:
       event: pull_request
     secrets: [ GITHUB_TOKEN ]
