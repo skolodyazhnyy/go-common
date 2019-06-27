@@ -1,9 +1,5 @@
 .PHONY: dep lint test cover emojify
 
-GO := go
-PACKAGE_DIRS := $(shell $(GO) list ./... | grep -v /vendor/)
-COVER_MSG ?= coverage.msg
-
 dep:
 	go get ./...
 
@@ -12,6 +8,3 @@ lint:
 
 test:
 	go test ./...
-
-cover:
-	$(GO) test $(PACKAGE_DIRS) --cover > $(COVER_MSG)

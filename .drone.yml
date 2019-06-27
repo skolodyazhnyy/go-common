@@ -52,14 +52,6 @@ pipeline:
       - "go-acc ./... > coverage.out"
       - "cat coverage.out"
 
-  # github-publish-coverage:
-  #   image: jmccann/drone-github-comment:1
-  #   pull: true
-  #   when:
-  #     event: pull_request
-  #   secrets: [ GITHUB_TOKEN ]
-  #   message_file: coverage.msg
-
   coverage-persistor:
     image: mcom/go-coverage-persistor:latest
     pull: true

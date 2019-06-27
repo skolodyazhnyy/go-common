@@ -1,5 +1,0 @@
-#!/bin/sh
-
-sed -i 's/ok/:white_check_mark:/g' $1
-sed -i 's/?/:broken_heart:/g' $1
-sed -i 's/FAIL/FAIL :tomato:/g' $1
