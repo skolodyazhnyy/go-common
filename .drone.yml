@@ -9,11 +9,11 @@ pipeline:
     commands:
       - "make dep"
 
-  lint:
-    image: golangci/golangci-lint:v1.16.0
-    pull: true
-    commands:
-      - "make lint"
+  # lint:
+  #   image: golangci/golangci-lint:v1.16.0
+  #   pull: true
+  #   commands:
+  #     - "make lint"
 
   # test-1-9:
   #   group: test
@@ -47,11 +47,9 @@ pipeline:
     group: test
     image: mcom/gobuilder:1.12
     pull: true
-    environment:
-      COVER_OUT: "coverage.out"
     commands:
       - "go get github.com/ory/go-acc"
-      - "go-acc ./... > ${COVER_OUT}"
+      - "go-acc ./... > coverage.out"
       - "cat coverage.out"
 
   # github-publish-coverage:
@@ -66,7 +64,7 @@ pipeline:
     image: mcom/go-coverage-persistor:latest
     pull: true
     environment:
-      COVER_OUT: "coverage.out"
+      COVER_FILE: "coverage.out"
     when:
       event: pull_request
     secrets: [ GITHUB_TOKEN ]
