@@ -43,16 +43,7 @@ pipeline:
     commands:
       - "make test"
 
-  coverage:
-    group: coverage
-    image: mcom/gobuilder:1.12
-    pull: true
-    commands:
-      - "go get github.com/ory/go-acc"
-      - "go-acc ./... > coverage.out"
-      - "cat coverage.out"
-
-  coverage-persistor:
+  coverage-report:
     group: publish
     image: mcom/go-coverage-persistor:latest
     pull: true
