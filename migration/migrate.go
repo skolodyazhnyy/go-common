@@ -2,7 +2,32 @@ package migration
 
 import (
 	"database/sql"
+	"fmt"
 )
+
+var installs map[string][]string
+
+func Add(name string, migrations []string) {
+	if installs == nil {
+		installs = make(map[string][]string)
+	}
+
+	if _, ok := installs[name]; ok {
+		panic(fmt.Errorf("migration %#v already added", name))
+	}
+
+	installs[name] = migrations
+}
+
+func Install(db *sql.DB) error {
+	for name, migrations := range installs {
+		if err := Apply(db, name, migrations); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
 
 func Version(db *sql.DB, name string) (int, bool) {
 	version := -1

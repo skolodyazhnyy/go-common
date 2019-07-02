@@ -11,6 +11,9 @@ type backend interface {
 	Record(R)
 }
 
+// Discard logged records
+var Discard = NewLogger(&nopBackend{})
+
 // New creates logger with a given backend
 func New(fmt string, w io.Writer, f func(R) string) *Logger {
 	switch fmt {
@@ -74,12 +77,33 @@ func DefaultTextFormat(rec R) string {
 	message := rec["message"]
 	delete(rec, "message")
 
+	if e, ok := rec["error"]; ok {
+		message = fmt.Sprint(message, ": ", e)
+		delete(rec, "error")
+	}
+
 	data, err := json.Marshal(rec)
 	if err != nil {
 		data = []byte(fmt.Sprintf("[!marshalling error: %v!]", err))
 	}
 
-	return fmt.Sprintf("%v %v.%v %v %s", time.Now().Format(time.RFC3339Nano), channel, severity, message, data)
+	color := "1;37"
+	switch severity {
+	case "ERROR":
+		color = "1;31"
+	case "INFO":
+		color = "1;34"
+	}
+
+	return fmt.Sprintf(
+		"\033[2;37m[%v]\033[0m \033[%vm%v.%v\033[0m \033[37m%v\033[0m \033[2;37m%s\033[0m",
+		time.Now().UTC().Format("2006-01-02T15:04:05"),
+		color,
+		channel,
+		severity,
+		message,
+		data,
+	)
 }
 
 // Record an entry
@@ -89,4 +113,11 @@ func (b *TextBackend) Record(rec R) {
 	}
 
 	fmt.Fprintln(b.Writer, b.Formatter(rec))
+}
+
+type nopBackend struct {
+}
+
+// Record an entry
+func (b *nopBackend) Record(rec R) {
 }
