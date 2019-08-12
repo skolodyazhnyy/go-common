@@ -22,8 +22,8 @@ const (
 	// Environment credentials use environment variables
 	CredentialsTypeEnvironment string = "environment"
 
-	// Gets credentials from IAM Role assigned to EC2 instance
-	CredentialsTypeRole string = "role"
+	// Makes AWS SDK handle crendentials automatically
+	CredentialsTypeAuto string = "auto"
 )
 
 // Credentials from AWS Config
@@ -35,7 +35,7 @@ func Credentials(c Config) (*credentials.Credentials, error) {
 		return credentials.NewEnvCredentials(), nil
 	case CredentialsTypeShared:
 		return credentials.NewSharedCredentials(c.CredentialsFilename, c.Profile), nil
-	case CredentialsTypeRole, "":
+	case CredentialsTypeAuto, "":
 		return nil, nil
 	}
 
