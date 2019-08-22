@@ -54,16 +54,27 @@ func (c *Client) Clients() ([]string, error) {
 	return clients, nil
 }
 
-// Value retrieves a single key
+// Value retrieves a single key and puts its content inside a given struct
 func (c *Client) Value(client string, scope string, key string, v interface{}) error {
-	endpoint := escapef("/client/%s/environment/%s/scope/%s/merged/%s", client, c.env, scope, key)
+	body, err := c.ValueAsString(client, scope, key)
 
-	body, err := c.get(endpoint)
 	if err != nil {
 		return err
 	}
 
-	return json.Unmarshal(body, v)
+	return json.Unmarshal([]byte(body), v)
+}
+
+// ValueAsString retrieves a single key in string format
+func (c *Client) ValueAsString(client string, scope string, key string) (string, error) {
+	endpoint := escapef("/client/%s/environment/%s/scope/%s/merged/%s", client, c.env, scope, key)
+
+	body, err := c.get(endpoint)
+	if err != nil {
+		return "", err
+	}
+
+	return string(body), nil
 }
 
 func (c *Client) get(endpoint string) ([]byte, error) {
