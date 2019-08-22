@@ -119,7 +119,7 @@ func TestValueWhenReturnedValueIsAString(t *testing.T) {
 
 	cli := NewClient(srv.URL, "env", &http.Client{})
 
-	retrieved, err := cli.ValueString("snoopy", "loc", "key")
+	retrieved, err := cli.ValueAsString("snoopy", "loc", "key")
 	if err != nil {
 		t.Fatal("Request not processed", err)
 	}

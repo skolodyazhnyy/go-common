@@ -56,18 +56,18 @@ func (c *Client) Clients() ([]string, error) {
 
 // Value retrieves a single key
 func (c *Client) Value(client string, scope string, key string, v interface{}) error {
-	endpoint := escapef("/client/%s/environment/%s/scope/%s/merged/%s", client, c.env, scope, key)
 
-	body, err := c.get(endpoint)
+	body, err := c.ValueAsString(client, scope, key)
+
 	if err != nil {
 		return err
 	}
 
-	return json.Unmarshal(body, v)
+	return json.Unmarshal([]byte(body), v)
 }
 
 // Value String retrieves a single key when the value is a string (not an object)
-func (c *Client) ValueString(client string, scope string, key string) (string, error) {
+func (c *Client) ValueAsString(client string, scope string, key string) (string, error) {
 	endpoint := escapef("/client/%s/environment/%s/scope/%s/merged/%s", client, c.env, scope, key)
 
 	body, err := c.get(endpoint)
