@@ -26,7 +26,6 @@ func TestNewClient(t *testing.T) {
 }
 
 func TestClients(t *testing.T) {
-
 	type ExpectedType struct {
 		Value string
 	}
@@ -65,7 +64,6 @@ func TestClients(t *testing.T) {
 }
 
 func TestValue(t *testing.T) {
-
 	type ExpectedType struct {
 		Value string
 	}
