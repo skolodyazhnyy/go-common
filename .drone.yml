@@ -42,6 +42,12 @@ pipeline:
     pull: true
     environment:
       COVER_FILE: "coverage.out"
+      COVER_DEBUG: "1"
+      COVER_REPORT_UPDATE: "replace"
     when:
-      event: pull_request
-    secrets: [ GITHUB_TOKEN ]
+      event: [ pull_request, push ]
+    secrets:
+      - { source: github_token, target: github_token }
+      - { source: coverage_es_user, target: es_user }
+      - { source: coverage_es_password, target: es_password }
+      - { source: coverage_es_url, target: es_url }
