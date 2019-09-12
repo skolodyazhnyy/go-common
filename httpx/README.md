@@ -49,7 +49,7 @@ WithSignature middleware allows to add signature header to every request. It cal
 
 ```go
 client := httpx.NewClient(http.DefaultClient, httpx.WithSignature(
-	sha1signer.New(),
+	signature.SHA1WithSecret("secret"),
 ))
 ```
 
